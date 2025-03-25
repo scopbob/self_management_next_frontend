@@ -3,6 +3,8 @@ import { ZodError } from "zod";
 import { authConfig } from "./auth.config";
 import Credentials from "next-auth/providers/credentials";
 import { SigninFormSchema } from "@/lib/definitions";
+import { getIsTokenValid } from "./lib/auth-helpers";
+import { handleLogout } from "./lib/actions";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -29,7 +31,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: data.email,
             accessToken: data.access,
             refreshToken: data.refresh,
-            expiresAt: data.expiresAt,
           };
         } catch (error) {
           if (error instanceof ZodError) {
@@ -47,10 +48,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return {
           ...token,
           access_token: user.accessToken,
-          expires_at: user.expiresAt,
           refresh_token: user.refreshToken,
         };
-      } else if (Date.now() > (token.exp as number) * 1000) {
+      } else if (getIsTokenValid(token.access_token as string)) {
         // Subsequent logins, but the `access_token` is still valid
         return token;
       } else {
@@ -87,6 +87,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       session.accessToken = token.access_token as string;
+      session.refreshToken = token.refresh_token as string;
       session.error = token.error as "RefreshTokenError";
       return session;
     },

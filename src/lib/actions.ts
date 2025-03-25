@@ -66,7 +66,6 @@ export async function createAccount(State: FormState, formData: FormData) {
 
 export async function handleLogout() {
   const session = await auth();
-
   if (session?.refreshToken) {
     await fetch(process.env.API_URL + "/account/auth/blacklist", {
       method: "POST",

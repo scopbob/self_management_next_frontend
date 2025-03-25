@@ -1,9 +1,13 @@
 import type { NextAuthConfig } from "next-auth";
-import NextAuth from "next-auth";
+import { getIsTokenValid } from "./lib/auth-helpers";
 
 export const authConfig = {
   pages: {
     signIn: "/login",
+  },
+  session: {
+    strategy: "jwt", // セッションをJWTベースにする
+    maxAge: 60 * 60 * 24 * 1, // セッションの有効期限（1日）
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
