@@ -1,5 +1,5 @@
 import { Button, Container, Heading, Text, VStack, HStack } from "@chakra-ui/react";
-import Link from "next/link";
+import NextLink from "next/link";
 
 export default function IntroductionPage() {
   return (
@@ -12,10 +12,10 @@ export default function IntroductionPage() {
       </Text>
       <HStack>
         <Button size="lg" asChild>
-          <a href="/login">Login</a>
+          <NextLink href="/login">Login</NextLink>
         </Button>
         <Button variant="outline" size="lg" asChild>
-          <a href="/signup">Signup</a>
+          <NextLink href="/signup">Signup</NextLink>
         </Button>
       </HStack>
     </VStack>

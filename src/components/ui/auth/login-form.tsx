@@ -1,6 +1,8 @@
 "use client";
 
-import { Button, Card, Heading, Input, Text, VStack, Field, Fieldset, Link } from "@chakra-ui/react";
+import NextLink from "next/link";
+import { Button, IconButton, Card, Heading, Input, Text, VStack, Field, Fieldset, Link } from "@chakra-ui/react";
+import { FiChevronLeft } from "react-icons/fi";
 import { PasswordInput } from "@/components/ui/password-input";
 
 import { useActionState } from "react";
@@ -14,6 +16,11 @@ export default function LoginForm() {
   return (
     <VStack minH="100vh" justify="center">
       <Card.Root w="sm" p={6} boxShadow="xl" borderRadius="lg">
+        <IconButton position="absolute" top={6} left={4} variant="ghost">
+          <NextLink href="/">
+            <FiChevronLeft />
+          </NextLink>
+        </IconButton>
         <Card.Header>
           <Heading size="lg" textAlign="center">
             Welcome Back!
@@ -41,8 +48,8 @@ export default function LoginForm() {
               <Fieldset.ErrorText>{errorMessage}</Fieldset.ErrorText>
               <Text>
                 または
-                <Link variant="underline" href="signup" colorPalette="teal">
-                  登録
+                <Link asChild variant="underline" colorPalette="teal">
+                  <NextLink href="signup">登録</NextLink>
                 </Link>
                 する
               </Text>

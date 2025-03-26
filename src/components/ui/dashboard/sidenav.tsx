@@ -1,26 +1,40 @@
 import { FiLogOut } from "react-icons/fi";
+import NextLink from "next/link";
 import NavLinks from "@/components/ui/dashboard/nav-links";
 import { handleLogout } from "@/lib/actions";
-import { Button } from "@chakra-ui/react";
+import { Box, Stack, VStack, Button, Heading, Text } from "@chakra-ui/react";
 
 export default function SideNav() {
   return (
-    <div className="flex h-full flex-col px-3 py-4 md:px-2">
-      <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
+    <VStack display={"flex"} h="full" bg="gray.100" p={4}>
+      {/* ヘッダー部分 */}
+
+      <NextLink className="w-full" href="/">
+        <Box w="full" bg="gray.700" color="white" p={4} borderRadius="md">
+          <Heading size="md">Self Manager</Heading>
+        </Box>
+      </NextLink>
+
+      {/* ナビゲーション部分 */}
+      <Stack display="flex" flexGrow="1" direction={{ base: "row", md: "column" }} justify={{ base: "space-between", md: "flex-start" }} w="full" padding={2} mt={2}>
         <NavLinks />
-        <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
+
+        {/* 余白のボックス */}
+        <Box flexGrow="1" display={{ base: "none", md: "block" }} />
+
+        {/* ログアウトボタン */}
         <form
           action={async () => {
             "use server";
             await handleLogout();
           }}
         >
-          <Button colorPalette={"red"} type="submit">
+          <Button colorPalette="red" type="submit" w="full" textAlign="left">
             <FiLogOut />
-            Sign Out
+            <Text display={{ base: "none", md: "block" }}>Sign Out</Text>
           </Button>
         </form>
-      </div>
-    </div>
+      </Stack>
+    </VStack>
   );
 }

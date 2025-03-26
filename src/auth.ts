@@ -43,6 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
+      //auth.jsを用いてtokenのrefreshを試みたが、token.access_tokenが固定されてしまい、何度もrefreshされてしまう。sessionで代入はされているようで、session.accessTokenは変更されているため、一応動作はする。
       if (user) {
         // First-time login, save the `access_token`, its expiry and the `refresh_token`
         return {

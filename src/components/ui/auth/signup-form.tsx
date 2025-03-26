@@ -1,7 +1,9 @@
 "use client";
 
+import NextLink from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button, Card, Heading, Input, Text, VStack, Field, Fieldset, Link } from "@chakra-ui/react";
+import { Button, IconButton, Card, Heading, Input, Text, VStack, Field, Fieldset, Link } from "@chakra-ui/react";
+import { FiChevronLeft } from "react-icons/fi";
 import { useActionState } from "react";
 import { createAccount } from "@/lib/actions";
 import { FormState } from "@/lib/definitions";
@@ -12,6 +14,11 @@ export default function SignUpForm() {
   return (
     <VStack minH="100vh" justify="center">
       <Card.Root w="sm" p={6} boxShadow="xl" borderRadius="lg">
+        <IconButton position="absolute" top={6} left={4} variant="ghost">
+          <NextLink href="/">
+            <FiChevronLeft />
+          </NextLink>
+        </IconButton>
         <Card.Header>
           <Heading size="lg" textAlign="center">
             Create Account
@@ -61,8 +68,8 @@ export default function SignUpForm() {
               <Fieldset.ErrorText>{state?.message}</Fieldset.ErrorText>
               <Text>
                 または
-                <Link variant="underline" href="login" colorPalette="teal">
-                  ログイン
+                <Link asChild variant="underline" colorPalette="teal">
+                  <NextLink href="login">ログイン</NextLink>
                 </Link>
                 する
               </Text>

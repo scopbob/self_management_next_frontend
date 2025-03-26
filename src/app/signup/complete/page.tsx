@@ -4,10 +4,10 @@ import { Metadata } from "next";
 import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
 
 export const metadata: Metadata = {
-  title: "Login",
+  title: "Signup",
 };
 
-export default function LoginPage() {
+export default function SignUpCompletePage() {
   return (
     <VStack h="100vh" justify="center">
       <Box textAlign="center">
