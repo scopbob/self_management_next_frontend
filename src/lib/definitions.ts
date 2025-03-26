@@ -22,8 +22,8 @@ export type TodoState = {
   category_id: number;
   title: string;
   text: string;
-  due: Date;
-  start: Date;
+  due: string;
+  start: string;
   progress: number;
   priority: number;
 };
