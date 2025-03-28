@@ -1,9 +1,9 @@
 import { VStack, Text } from "@chakra-ui/react";
 import { TodoState } from "@/lib/definitions";
 import { fetchTodos } from "@/lib/actions";
-import TodoCard from "./todos/todo_card";
+import TodoCard from "./todo_card";
 
-export default async function LatestTodos() {
+export default async function TodosTable() {
   const Todos = await fetchTodos(); // Fetch data inside the component
   return (
     <VStack

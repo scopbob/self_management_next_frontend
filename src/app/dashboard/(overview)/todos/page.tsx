@@ -1,4 +1,4 @@
-import LatestTodos from "@/components/ui/dashboard/latest-todos";
+import TodosTable from "@/components/ui/dashboard/todos/table";
 import { Suspense } from "react";
 import { Metadata } from "next";
 
@@ -9,9 +9,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <main>
-      <Suspense>
-        <LatestTodos />
-      </Suspense>
+      <TodosTable />
     </main>
   );
 }

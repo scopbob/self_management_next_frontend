@@ -10,6 +10,30 @@ export const SigninFormSchema = SignupFormSchema.omit({ password1: true, passwor
   password: SignupFormSchema.shape.password1,
 });
 
+const PRIORITY_CHOICES = {
+  high: 1,
+  middle: 2,
+  low: 3,
+} as const;
+
+const priorityEnum = z.nativeEnum(PRIORITY_CHOICES);
+
+// `Todo` の `validateObject` をzodで作成
+export const TodoFormSchema = z.object({
+  id: z.number(),
+  title: z.string().max(50, "Title cannot be longer than 50 characters"), // 最大50文字
+  text: z.string().max(500, "Text cannot be longer than 500 characters").optional(), // 最大500文字、空でもOK
+  due: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: "Invalid due date format",
+  }), // 日付のフォーマット検証
+  start: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: "Invalid start date format",
+  }), // 日付のフォーマット検証
+  progress: z.number().min(0, "Progress cannot be less than 0").max(100, "Progress cannot be more than 100"), // 0~100の間
+  category: z.string().optional(), // OptionalなカテゴリーID
+  priority: priorityEnum, // 高, 中, 低のいずれか
+});
+
 export type FormState =
   | {
       errors: { [key: string]: string[] };
@@ -19,7 +43,7 @@ export type FormState =
 
 export type TodoState = {
   id: number;
-  category_id: number;
+  category: number;
   title: string;
   text: string;
   due: string;

@@ -2,9 +2,10 @@
 
 import NextLink from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button, IconButton, CheckboxCard, Heading, Progress, HStack, Input, Text, VStack, Field, Fieldset, Link } from "@chakra-ui/react";
+import { Button, IconButton, Checkbox, Card, Heading, Progress, HStack, Input, Text, VStack, Field, Fieldset, Link } from "@chakra-ui/react";
 import { BsPersonWalking } from "react-icons/bs";
 import { LuAlarmClock } from "react-icons/lu";
+import { MdEdit } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { TodoState } from "@/lib/definitions";
 
@@ -71,36 +72,60 @@ const useTime = (due_str: string, start_str: string) => {
 
 export default function TodoCard(todo: TodoState) {
   const remaining = useTime(todo.due, todo.start);
+  const priorityColors: Record<number, { bg: string; border: string }> = {
+    1: { bg: "red.50", border: "red.500" }, // high
+    2: { bg: "yellow.50", border: "yellow.500" }, // middle
+    3: { bg: "blue.50", border: "blue.500" }, // low
+  };
+  const { bg, border } = priorityColors[todo.priority] || priorityColors[3];
   return (
-    <CheckboxCard.Root value={String(todo.id)} w="full" p={6} boxShadow="xl" borderRadius="lg">
-      <CheckboxCard.HiddenInput />
-      <CheckboxCard.Control>
-        <CheckboxCard.Indicator />
-        <CheckboxCard.Content>
-          <CheckboxCard.Label>
-            <Heading>{todo.title}</Heading>
-          </CheckboxCard.Label>
-          <CheckboxCard.Description>{remaining !== null && remaining?.timer} </CheckboxCard.Description>
-          <HStack w="full">
-            <LuAlarmClock size="20" />
-            {remaining !== null && (
-              <Progress.Root w="full" value={remaining.dead ? 100 : remaining.proportion} striped animated={!remaining.dead} colorPalette={remaining.dead ? "red" : "gray"}>
-                <Progress.Track>
-                  <Progress.Range />
-                </Progress.Track>
-              </Progress.Root>
-            )}
-          </HStack>
-          <HStack w="full">
-            <BsPersonWalking size="20" />
-            <Progress.Root w="full" value={todo.progress} striped colorPalette="green">
-              <Progress.Track>
+    <Card.Root w="full" px="6" py="3" size="sm" bg={bg} boxShadow="xl" borderRadius="lg" borderColor={border} borderWidth="2px">
+      <Card.Header w="full" px="0" py="2">
+        <HStack w="full" justify="start">
+          <Checkbox.Root>
+            <Checkbox.HiddenInput />
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+            <Checkbox.Label />
+          </Checkbox.Root>
+          <Link asChild>
+            <NextLink href={`todos/${String(todo.id)}`}>
+              <Heading>{todo.title}</Heading>
+            </NextLink>
+          </Link>
+          <NextLink href={`todos/${String(todo.id)}/edit`}>
+            <IconButton aria-label="edit" colorPalette="gray" rounded="full" size="xs">
+              <MdEdit />
+            </IconButton>
+          </NextLink>
+          {remaining !== null && (
+            <Text marginLeft="auto" color={remaining.dead ? "red" : "gray"}>
+              {remaining?.timer}
+            </Text>
+          )}
+        </HStack>
+      </Card.Header>
+      <VStack w="full">
+        <HStack w="full">
+          <LuAlarmClock size="20" />
+          {remaining !== null && (
+            <Progress.Root w="full" value={remaining.dead ? 100 : remaining.proportion} borderWidth="2px" borderRadius="full" striped animated={!remaining.dead} colorPalette={remaining.dead ? "red" : "gray"}>
+              <Progress.Track borderRadius="full">
                 <Progress.Range />
               </Progress.Track>
             </Progress.Root>
-          </HStack>
-        </CheckboxCard.Content>
-      </CheckboxCard.Control>
-    </CheckboxCard.Root>
+          )}
+        </HStack>
+        <HStack w="full">
+          <BsPersonWalking size="20" />
+          <Progress.Root borderWidth="2px" borderRadius="full" w="full" value={todo.progress} striped colorPalette="green">
+            <Progress.Track borderRadius="full">
+              <Progress.Range />
+            </Progress.Track>
+          </Progress.Root>
+        </HStack>
+      </VStack>
+    </Card.Root>
   );
 }

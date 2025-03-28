@@ -3,7 +3,8 @@
 import { redirect } from "next/navigation";
 import { signIn, signOut, auth } from "@/auth";
 import { AuthError } from "next-auth";
-import { SignupFormSchema, FormState, ApiErrorDetail } from "@/lib/definitions";
+import { SignupFormSchema, FormState, ApiErrorDetail, TodoState, TodoFormSchema } from "@/lib/definitions";
+import { getIsTokenValid } from "./auth-helpers";
 
 export async function fetchTodos() {
   const session = await auth();
@@ -14,6 +15,62 @@ export async function fetchTodos() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`, // 型エラー防止
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      throw Error;
+    }
+    return data;
+  } catch (error) {}
+}
+
+export async function fetchTodo(id: number) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`, // 型エラー防止
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      throw Error;
+    }
+    return data;
+  } catch (error) {}
+}
+
+export async function editTodo(State: FormState, formData: FormData) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  const validatedFields = TodoFormSchema.safeParse({ formData });
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Create an Account.",
+    };
+  }
+
+  const todo = validatedFields.data;
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/${todo.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        body: JSON.stringify(formData),
       },
     });
     const data = await response.json();
@@ -66,7 +123,7 @@ export async function createAccount(State: FormState, formData: FormData) {
 
 export async function handleLogout() {
   const session = await auth();
-  if (session?.refreshToken) {
+  if (session?.refreshToken && getIsTokenValid(session?.refreshToken)) {
     await fetch(process.env.API_URL + "/account/auth/blacklist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

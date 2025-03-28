@@ -1,4 +1,4 @@
-import NextAuth, { CredentialsSignin, type User } from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import { ZodError } from "zod";
 import { authConfig } from "./auth.config";
 import Credentials from "next-auth/providers/credentials";
