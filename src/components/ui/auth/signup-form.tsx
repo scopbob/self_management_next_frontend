@@ -2,7 +2,7 @@
 
 import NextLink from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button, IconButton, Card, Heading, Input, Text, VStack, Field, Fieldset, Link } from "@chakra-ui/react";
+import { Button, IconButton, Card, Heading, Input, Text, VStack, Field, Fieldset, Link, For, List } from "@chakra-ui/react";
 import { FiChevronLeft } from "react-icons/fi";
 import { useActionState } from "react";
 import { createAccount } from "@/lib/actions";
@@ -10,7 +10,7 @@ import { FormState } from "@/lib/definitions";
 
 export default function SignUpForm() {
   const initialState: FormState = { message: null, errors: {} };
-  const [state, formAction, isPending] = useActionState(createAccount, initialState);
+  const [state, formAction] = useActionState(createAccount, initialState);
   return (
     <VStack minH="100vh" justify="center">
       <Card.Root w="sm" p={6} boxShadow="xl" borderRadius="lg">
@@ -29,38 +29,33 @@ export default function SignUpForm() {
         </Card.Header>
         <Card.Body>
           <form action={formAction}>
-            <Fieldset.Root invalid={!!state}>
-              <Field.Root>
+            <Fieldset.Root invalid={!!state?.errors}>
+              <Field.Root invalid={!!state?.errors?.email}>
                 <Field.Label>Email address</Field.Label>
                 <Input id="email" name="email" type="email" placeholder="Enter your email" />
-                <div id="customer-error" aria-live="polite" aria-atomic="true">
-                  {state.errors?.email &&
-                    state.errors.email.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                </div>
+                <Field.ErrorText>
+                  <List.Root>
+                    <For each={state?.errors?.email}>{(item, index) => <List.Item key={index}>{item}</List.Item>}</For>
+                  </List.Root>
+                </Field.ErrorText>
               </Field.Root>
-              <Field.Root>
+              <Field.Root invalid={!!state?.errors?.password1}>
                 <Field.Label>Password</Field.Label>
                 <PasswordInput id="password1" name="password1" placeholder="Enter your password" />
-                {state.errors?.password1 &&
-                  state.errors.password1.map((error: string) => (
-                    <p className="mt-2 text-sm text-red-500" key={error}>
-                      {error}
-                    </p>
-                  ))}
+                <Field.ErrorText>
+                  <List.Root>
+                    <For each={state?.errors?.password1}>{(item, index) => <List.Item key={index}>{item}</List.Item>}</For>
+                  </List.Root>
+                </Field.ErrorText>
               </Field.Root>
-              <Field.Root>
+              <Field.Root invalid={!!state?.errors?.password2}>
                 <Field.Label>Confirm Password</Field.Label>
                 <PasswordInput id="password2" name="password2" placeholder="Enter your password again" />
-                {state.errors?.password2 &&
-                  state.errors.password2.map((error: string) => (
-                    <p className="mt-2 text-sm text-red-500" key={error}>
-                      {error}
-                    </p>
-                  ))}
+                <Field.ErrorText>
+                  <List.Root>
+                    <For each={state?.errors?.password2}>{(item, index) => <List.Item key={index}>{item}</List.Item>}</For>
+                  </List.Root>
+                </Field.ErrorText>
               </Field.Root>
               <Button type="submit" colorPalette="blue" w="full">
                 Sign Up

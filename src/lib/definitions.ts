@@ -10,28 +10,23 @@ export const SigninFormSchema = SignupFormSchema.omit({ password1: true, passwor
   password: SignupFormSchema.shape.password1,
 });
 
-const PRIORITY_CHOICES = {
-  high: 1,
-  middle: 2,
-  low: 3,
-} as const;
+const PRIORITY_CHOICES = ["Hi", "Md", "Lo"] as const;
 
-const priorityEnum = z.nativeEnum(PRIORITY_CHOICES);
+const priorityEnum = z.enum(PRIORITY_CHOICES);
 
-// `Todo` の `validateObject` をzodで作成
 export const TodoFormSchema = z.object({
   id: z.number(),
-  title: z.string().max(50, "Title cannot be longer than 50 characters"), // 最大50文字
+  title: z.string({ required_error: "Title is required" }).max(50, "Title cannot be longer than 50 characters"),
   text: z.string().max(500, "Text cannot be longer than 500 characters").optional(), // 最大500文字、空でもOK
   due: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "Invalid due date format",
   }), // 日付のフォーマット検証
   start: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: "Invalid start date format",
+    message: "Invalida start date format",
   }), // 日付のフォーマット検証
   progress: z.number().min(0, "Progress cannot be less than 0").max(100, "Progress cannot be more than 100"), // 0~100の間
-  category: z.string().optional(), // OptionalなカテゴリーID
-  priority: priorityEnum, // 高, 中, 低のいずれか
+  category: z.number().nullable(), // OptionalなカテゴリーID
+  priority: priorityEnum.array(), // 高, 中, 低のいずれか
 });
 
 export type FormState =
@@ -41,15 +36,43 @@ export type FormState =
     }
   | undefined;
 
-export type TodoState = {
+export type Category = {
   id: number;
-  category: number;
+  name: string;
+  color: string;
+};
+
+export type Todo = {
+  id: number;
+  category?: Category[];
   title: string;
-  text: string;
+  text?: string;
   due: string;
   start: string;
   progress: number;
-  priority: number;
+  priority: "Hi" | "Md" | "Lo";
+};
+
+export type TodoSubmit = {
+  id: number;
+  category?: number | null;
+  title: string;
+  text?: string;
+  due: string;
+  start: string;
+  progress: number;
+  priority: "Hi" | "Md" | "Lo";
+};
+
+export type TodoForm = {
+  id: number;
+  category: number | null;
+  title: string;
+  text?: string;
+  due: string;
+  start: string;
+  progress: number;
+  priority: "Hi" | "Md" | "Lo";
 };
 
 export type ApiErrorDetail = {

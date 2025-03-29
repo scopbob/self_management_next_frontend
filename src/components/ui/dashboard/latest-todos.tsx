@@ -1,5 +1,5 @@
 import { VStack, Text } from "@chakra-ui/react";
-import { TodoState } from "@/lib/definitions";
+import { Todo } from "@/lib/definitions";
 import { fetchTodos } from "@/lib/actions";
 import TodoCard from "./todos/todo_card";
 
@@ -10,7 +10,7 @@ export default async function LatestTodos() {
       spaceY="0.5
     "
     >
-      {Todos?.map((todo: TodoState, i: number) => {
+      {Todos?.map((todo: Todo, i: number) => {
         return <TodoCard {...todo} key={todo.id} />;
       })}
     </VStack>

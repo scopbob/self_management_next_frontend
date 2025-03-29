@@ -21,7 +21,7 @@ const priority_choices = createListCollection({
   ],
 });
 
-export default function EditTodo(todo: TodoForm) {
+export default function CreateTodo() {
   type FormValues = z.infer<typeof TodoFormSchema>;
 
   const {
@@ -31,7 +31,6 @@ export default function EditTodo(todo: TodoForm) {
     control,
   } = useForm<FormValues>({
     resolver: zodResolver(TodoFormSchema),
-    defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due)), priority: [todo.priority] },
   });
 
   const onSubmit = handleSubmit((data) => editTodo({ ...data, priority: data.priority[0] }));

@@ -7,7 +7,7 @@ import { BsPersonWalking } from "react-icons/bs";
 import { LuAlarmClock } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";
 import { useEffect, useState } from "react";
-import { TodoState } from "@/lib/definitions";
+import { Todo } from "@/lib/definitions";
 
 function calcRemainingTime(due_str: string) {
   const due = new Date(due_str);
@@ -31,7 +31,7 @@ function calcProportion(start_str: string, due_str: string) {
   const now = new Date();
   const progress = now.getTime() - start.getTime();
   const whole = due.getTime() - start.getTime();
-  const proportion = progress / whole;
+  const proportion = (progress / whole) * 100;
   return proportion;
 }
 
@@ -70,14 +70,14 @@ const useTime = (due_str: string, start_str: string) => {
   return remaining;
 };
 
-export default function TodoCard(todo: TodoState) {
+export default function TodoCard(todo: Todo) {
   const remaining = useTime(todo.due, todo.start);
-  const priorityColors: Record<number, { bg: string; border: string }> = {
-    1: { bg: "red.50", border: "red.500" }, // high
-    2: { bg: "yellow.50", border: "yellow.500" }, // middle
-    3: { bg: "blue.50", border: "blue.500" }, // low
+  const priorityColors: Record<string, { bg: string; border: string }> = {
+    Hi: { bg: "red.50", border: "red.500" }, // high
+    Md: { bg: "yellow.50", border: "yellow.500" }, // middle
+    Lo: { bg: "blue.50", border: "blue.500" }, // low
   };
-  const { bg, border } = priorityColors[todo.priority] || priorityColors[3];
+  const { bg, border } = priorityColors[todo.priority];
   return (
     <Card.Root w="full" px="6" py="3" size="sm" bg={bg} boxShadow="xl" borderRadius="lg" borderColor={border} borderWidth="2px">
       <Card.Header w="full" px="0" py="2">
@@ -100,7 +100,7 @@ export default function TodoCard(todo: TodoState) {
             </IconButton>
           </NextLink>
           {remaining !== null && (
-            <Text marginLeft="auto" color={remaining.dead ? "red" : "gray"}>
+            <Text marginLeft="auto" color={remaining.dead ? "red" : "gray"} textDecorationLine={remaining.dead ? "underline" : "none"}>
               {remaining?.timer}
             </Text>
           )}

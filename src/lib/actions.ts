@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { signIn, signOut, auth } from "@/auth";
 import { AuthError } from "next-auth";
-import { SignupFormSchema, FormState, ApiErrorDetail, TodoState, TodoFormSchema } from "@/lib/definitions";
+import { SignupFormSchema, FormState, ApiErrorDetail, Todo, TodoFormSchema, TodoForm, TodoSubmit } from "@/lib/definitions";
 import { getIsTokenValid } from "./auth-helpers";
 
 export async function fetchTodos() {
@@ -52,26 +52,21 @@ export async function fetchTodo(id: number) {
   } catch (error) {}
 }
 
-export async function editTodo(State: FormState, formData: FormData) {
+export async function editTodo(todo: TodoSubmit) {
   const session = await auth();
   const accessToken = session?.accessToken;
-  const validatedFields = TodoFormSchema.safeParse({ formData });
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Create an Account.",
-    };
-  }
 
-  const todo = validatedFields.data;
+  todo.due = new Date(todo.due).toISOString();
+  todo.start = new Date(todo.start).toISOString();
+
   try {
     const response = await fetch(process.env.API_URL + `/todo/${todo.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
-        body: JSON.stringify(formData),
       },
+      body: JSON.stringify(todo),
     });
     const data = await response.json();
     if (!response.ok) {
@@ -79,10 +74,12 @@ export async function editTodo(State: FormState, formData: FormData) {
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
-      throw Error;
+      return { errors: error_details };
     }
-    return data;
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
+  await redirect("/dashboard/todos");
 }
 
 export async function createAccount(State: FormState, formData: FormData) {
@@ -91,7 +88,6 @@ export async function createAccount(State: FormState, formData: FormData) {
     password1: formData.get("password1"),
     password2: formData.get("password2"),
   });
-
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,

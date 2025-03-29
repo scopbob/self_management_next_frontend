@@ -7,7 +7,7 @@ export const authConfig = {
   },
   session: {
     strategy: "jwt", // セッションをJWTベースにする
-    maxAge: 60 * 60 * 24 * 1, // セッションの有効期限（1日）
+    maxAge: 60 * 60, // セッションの有効期限（1時間）
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
