@@ -27,10 +27,10 @@ export default function TodoDetail(todo: Todo) {
         </HStack>
         <Text mt={2}>{todo.text}</Text>
         <HStack mt={4}>
-          <Text>開始: {new Date(todo.start).toLocaleString()}</Text>
+          <Text>開始: {new Date(todo.start).toLocaleString().slice(0, -3)}</Text>
         </HStack>
         <HStack mt={2}>
-          <Text>期限: {new Date(todo.due).toLocaleString()}</Text>
+          <Text>期限: {new Date(todo.due).toLocaleString().slice(0, -3)}</Text>
         </HStack>
         <HStack mt={4} w="full" spaceX="4">
           <Text fontSize="xl">進捗: {todo.progress} /100</Text>

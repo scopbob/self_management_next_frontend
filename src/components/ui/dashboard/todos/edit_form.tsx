@@ -31,10 +31,10 @@ export default function EditTodo(todo: TodoForm) {
     control,
   } = useForm<FormValues>({
     resolver: zodResolver(TodoFormSchema),
-    defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due)), priority: [todo.priority] },
+    defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due + "")), priority: [todo.priority] },
   });
 
-  const onSubmit = handleSubmit((data) => editTodo({ ...data, priority: data.priority[0] }));
+  const onSubmit = handleSubmit((data) => editTodo({ ...data, due: new Date(todo.due).toISOString(), priority: data.priority[0] }));
   return (
     <VStack align="start" p={6} w="full">
       <Heading size="3xl">Edit:</Heading>
