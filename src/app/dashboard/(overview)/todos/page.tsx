@@ -1,7 +1,8 @@
 import TodosTable from "@/components/ui/dashboard/todos/table";
+import Pagination from "@/components/ui/dashboard/todos/pagination";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { Button, Heading, HStack } from "@chakra-ui/react";
+import { Button, Heading, HStack, VStack, ButtonGroup, IconButton } from "@chakra-ui/react";
 import NextLink from "next/link";
 import Search from "@/components/ui/dashboard/todos/search";
 import { lusitana } from "@/components/ui/fonts";
@@ -23,6 +24,9 @@ export default async function Page() {
         </Button>
       </HStack>
       <TodosTable />
+      <VStack pt="2" w="full">
+        <Pagination count={3} pageSize={2} />
+      </VStack>
     </main>
   );
 }
