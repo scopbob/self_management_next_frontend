@@ -110,7 +110,7 @@ export default function TodoCard(todo: Todo) {
         <HStack w="full">
           <LuAlarmClock size="20" />
           {remaining !== null && (
-            <Progress.Root w="full" value={remaining.dead ? 100 : remaining.proportion} borderWidth="2px" borderRadius="full" striped animated={!remaining.dead} colorPalette={remaining.dead ? "red" : "gray"}>
+            <Progress.Root w="full" value={remaining.dead ? 100 : remaining.proportion} borderWidth="2px" borderRadius="full" striped animated={!remaining.dead} colorPalette={remaining.dead ? "red" : "blue"}>
               <Progress.Track borderRadius="full">
                 <Progress.Range />
               </Progress.Track>

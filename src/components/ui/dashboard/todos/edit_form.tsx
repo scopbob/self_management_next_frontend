@@ -1,13 +1,13 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { TodoForm } from "@/lib/definitions";
+import { Category, TodoForm } from "@/lib/definitions";
 import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden } from "@chakra-ui/react";
 import { FiSave } from "react-icons/fi";
 import { editTodo } from "@/lib/actions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TodoFormSchema } from "@/lib/definitions";
+import { TodoEditSchema } from "@/lib/definitions";
 
 function convetDateToIso(d: Date) {
   return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
@@ -21,8 +21,8 @@ const priority_choices = createListCollection({
   ],
 });
 
-export default function EditTodo(todo: TodoForm) {
-  type FormValues = z.infer<typeof TodoFormSchema>;
+export default function EditTodo({ todo, categories }: { todo: TodoForm; categories: Category[] }) {
+  type FormValues = z.infer<typeof TodoEditSchema>;
 
   const {
     register,
@@ -30,11 +30,11 @@ export default function EditTodo(todo: TodoForm) {
     formState: { errors },
     control,
   } = useForm<FormValues>({
-    resolver: zodResolver(TodoFormSchema),
-    defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due + "")), priority: [todo.priority] },
+    resolver: zodResolver(TodoEditSchema),
+    defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due + "")), priority: [todo.priority], category: [String(todo.category)] },
   });
 
-  const onSubmit = handleSubmit((data) => editTodo({ ...data, due: new Date(todo.due).toISOString(), priority: data.priority[0] }));
+  const onSubmit = handleSubmit((data) => editTodo({ ...data, due: new Date(todo.due).toISOString(), priority: data.priority[0], category: Number(data.category[0]) }));
   return (
     <VStack align="start" p={6} w="full">
       <Heading size="3xl">Edit:</Heading>
@@ -91,6 +91,41 @@ export default function EditTodo(todo: TodoForm) {
               />
               <Field.ErrorText>{errors.progress?.message}</Field.ErrorText>
             </Field.Root>
+
+            <Field.Root w={{ base: "full", md: "1/2", lg: "1/4" }} invalid={!!errors?.category}>
+              <Field.Label>カテゴリー</Field.Label>
+              <Controller
+                control={control}
+                name="category"
+                render={({ field }) => (
+                  <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={priority_choices}>
+                    <Select.HiddenSelect />
+                    <Select.Control>
+                      <Select.Trigger>
+                        <Select.ValueText placeholder="select category" />
+                      </Select.Trigger>
+                      <Select.IndicatorGroup>
+                        <Select.Indicator />
+                      </Select.IndicatorGroup>
+                    </Select.Control>
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content>
+                          {categories.map((choice) => (
+                            <Select.Item item={choice} key={choice.id}>
+                              {choice.color}
+                              <Select.ItemIndicator />
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
+                )}
+              />
+              <Field.ErrorText>{errors.priority?.message}</Field.ErrorText>
+            </Field.Root>
+
             <Field.Root w={{ base: "full", md: "1/2", lg: "1/4" }} invalid={!!errors?.priority}>
               <Field.Label>優先度</Field.Label>
               <Controller

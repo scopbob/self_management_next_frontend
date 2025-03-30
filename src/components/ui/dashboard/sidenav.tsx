@@ -6,7 +6,7 @@ import { Box, Stack, VStack, Button, Heading, Text } from "@chakra-ui/react";
 
 export default function SideNav() {
   return (
-    <VStack display={"flex"} h="full" bg="gray.100" p={4}>
+    <VStack h="full" bg="gray.100" p={4}>
       {/* ヘッダー部分 */}
 
       <NextLink className="w-full" href="/">

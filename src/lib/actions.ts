@@ -6,15 +6,15 @@ import { AuthError } from "next-auth";
 import { SignupFormSchema, FormState, ApiErrorDetail, Todo, TodoFormSchema, TodoForm, TodoSubmit } from "@/lib/definitions";
 import { getIsTokenValid } from "./auth-helpers";
 
-export async function fetchTodos() {
+export async function fetchTodosCount() {
   const session = await auth();
   const accessToken = session?.accessToken;
   try {
-    const response = await fetch(process.env.API_URL + "/todo/", {
+    const response = await fetch(process.env.API_URL + "/todo/count", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`, // 型エラー防止
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     const data = await response.json();
@@ -25,8 +25,40 @@ export async function fetchTodos() {
       });
       throw Error;
     }
-    return data;
+    return Number(data);
   } catch (error) {}
+}
+
+export async function fetchFilteredTodos(search: string, currentPage: number, items_per_page: number) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  const offset = (currentPage - 1) * items_per_page;
+  const queryParams = new URLSearchParams({
+    search: search,
+    limit: String(items_per_page),
+    offset: String(offset),
+  });
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/?${queryParams}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      console.log(data);
+      throw Error;
+    }
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function fetchTodo(id: number) {
@@ -37,7 +69,7 @@ export async function fetchTodo(id: number) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`, // 型エラー防止
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     const data = await response.json();
@@ -45,14 +77,14 @@ export async function fetchTodo(id: number) {
       let error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
+        console.log(data);
       });
-      throw Error;
     }
     return data;
   } catch (error) {}
 }
 
-export async function editTodo(todo: TodoSubmit) {
+export async function createTodo(todo: TodoSubmit) {
   const session = await auth();
   const accessToken = session?.accessToken;
 
@@ -60,8 +92,8 @@ export async function editTodo(todo: TodoSubmit) {
   todo.start = new Date(todo.start).toISOString();
 
   try {
-    const response = await fetch(process.env.API_URL + `/todo/${todo.id}`, {
-      method: "PUT",
+    const response = await fetch(process.env.API_URL + `/todo/create`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
@@ -80,6 +112,100 @@ export async function editTodo(todo: TodoSubmit) {
     console.error(error);
   }
   await redirect("/dashboard/todos");
+}
+
+export async function editTodo(todo: TodoSubmit) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+
+  todo.due = new Date(todo.due).toISOString();
+  todo.start = new Date(todo.start).toISOString();
+
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/${todo.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(todo),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      return { errors: error_details };
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  await redirect("/dashboard/todos");
+}
+
+export async function fetchCategories() {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  try {
+    const response = await fetch(process.env.API_URL + "/todo/category/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.status == 404) {
+      console.log("not found");
+      return;
+    }
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      console.log(data);
+      throw Error;
+    }
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function fetchFilteredCategories(search: string, currentPage: number, items_per_page: number) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  const offset = (currentPage - 1) * items_per_page;
+  const queryParams = new URLSearchParams({
+    search: search,
+    limit: String(items_per_page),
+    offset: String(offset),
+  });
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/?${queryParams}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      console.log(data);
+      throw Error;
+    }
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function createAccount(State: FormState, formData: FormData) {

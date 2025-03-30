@@ -14,42 +14,64 @@ const PRIORITY_CHOICES = ["Hi", "Md", "Lo"] as const;
 
 const priorityEnum = z.enum(PRIORITY_CHOICES);
 
-export const TodoFormSchema = z
-  .object({
-    id: z.number(),
-    title: z.string({ required_error: "Title is required" }).min(1, "Title is required").max(50, "Title cannot be longer than 50 characters"),
-    text: z.string().max(500, "Text cannot be longer than 500 characters").optional(), // 最大500文字、空でもOK
-    start: z.string().refine(
-      (val) => {
-        return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/.test(val);
-      },
-      {
-        message: "Invalid datetime format",
-      }
-    ),
-    due: z.string().refine(
-      (val) => {
-        return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/.test(val);
-      },
-      {
-        message: "Invalid datetime format",
-      }
-    ),
-    progress: z.number().min(0, "Progress cannot be less than 0").max(100, "Progress cannot be more than 100"), // 0~100の間
-    category: z.number().nullable(), // OptionalなカテゴリーID
-    priority: priorityEnum.array(), // 高, 中, 低のいずれか
-  })
-  .refine(
-    (data) => {
-      const start = new Date(data.start);
-      const due = new Date(data.due);
-      return start <= due;
+export const TodoFormSchema = z.object({
+  id: z.number(),
+  title: z.string({ required_error: "Title is required" }).min(1, "Title is required").max(50, "Title cannot be longer than 50 characters"),
+  text: z.string().max(500, "Text cannot be longer than 500 characters").optional(), // 最大500文字、空でもOK
+  start: z.string().refine(
+    (val) => {
+      return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/.test(val);
     },
     {
-      message: "Start date must be before or equal to due date",
-      path: ["start"], // エラーメッセージをstartフィールドに関連付ける
+      message: "Invalid datetime format",
     }
-  );
+  ),
+  due: z
+    .string()
+    .refine(
+      (datetime) => {
+        return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/.test(datetime);
+      },
+      {
+        message: "Invalid datetime format",
+      }
+    )
+    .refine(
+      (due) => {
+        return new Date() < new Date(due);
+      },
+      {
+        message: "Due must be after now",
+      }
+    ),
+  progress: z.number().min(0, "Progress cannot be less than 0").max(100, "Progress cannot be more than 100"), // 0~100の間
+  category: z.string().array(), // OptionalなカテゴリーID
+  priority: priorityEnum.array(), // 高, 中, 低のいずれか
+});
+
+export const TodoEditSchema = TodoFormSchema.refine(
+  (data) => {
+    const start = new Date(data.start);
+    const due = new Date(data.due);
+    return start <= due;
+  },
+  {
+    message: "Start date must be before or equal to due date",
+    path: ["start"], // エラーメッセージをstartフィールドに関連付ける
+  }
+);
+
+export const TodoCreateSchema = TodoFormSchema.omit({ id: true }).refine(
+  (data) => {
+    const start = new Date(data.start);
+    const due = new Date(data.due);
+    return start <= due;
+  },
+  {
+    message: "Start date must be before or equal to due date",
+    path: ["start"], // エラーメッセージをstartフィールドに関連付ける
+  }
+);
 
 export type FormState =
   | {
@@ -76,8 +98,8 @@ export type Todo = {
 };
 
 export type TodoSubmit = {
-  id: number;
-  category?: number | null;
+  id?: number;
+  category?: number;
   title: string;
   text?: string;
   due: string;
@@ -88,7 +110,7 @@ export type TodoSubmit = {
 
 export type TodoForm = {
   id: number;
-  category: number | null;
+  category: number;
   title: string;
   text?: string;
   due: string;

@@ -1,10 +1,10 @@
 import { VStack, Text } from "@chakra-ui/react";
 import { Todo } from "@/lib/definitions";
-import { fetchTodos } from "@/lib/actions";
+import { fetchFilteredTodos } from "@/lib/actions";
 import TodoCard from "./todos/todo_card";
 
 export default async function LatestTodos() {
-  const Todos = await fetchTodos(); // Fetch data inside the component
+  //const Todos = await fetchFilteredTodos();
   return (
     <VStack
       spaceY="0.5
