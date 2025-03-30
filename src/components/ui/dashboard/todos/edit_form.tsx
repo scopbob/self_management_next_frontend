@@ -22,6 +22,10 @@ const priority_choices = createListCollection({
 });
 
 export default function EditTodo({ todo, categories }: { todo: TodoForm; categories: Category[] }) {
+  const category_choices = createListCollection({
+    items: [{ label: "カテゴリーなし", value: "0" }, ...categories.map((category) => ({ label: category.name, value: String(category.id) }))],
+  });
+
   type FormValues = z.infer<typeof TodoEditSchema>;
 
   const {
@@ -31,10 +35,10 @@ export default function EditTodo({ todo, categories }: { todo: TodoForm; categor
     control,
   } = useForm<FormValues>({
     resolver: zodResolver(TodoEditSchema),
-    defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due + "")), priority: [todo.priority], category: [String(todo.category)] },
+    defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due + "")), priority: [todo.priority], category: todo.category === null ? ["0"] : [String(todo.category)] },
   });
 
-  const onSubmit = handleSubmit((data) => editTodo({ ...data, due: new Date(todo.due).toISOString(), priority: data.priority[0], category: Number(data.category[0]) }));
+  const onSubmit = handleSubmit((data) => editTodo({ ...data, due: new Date(todo.due).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) }));
   return (
     <VStack align="start" p={6} w="full">
       <Heading size="3xl">Edit:</Heading>
@@ -98,7 +102,7 @@ export default function EditTodo({ todo, categories }: { todo: TodoForm; categor
                 control={control}
                 name="category"
                 render={({ field }) => (
-                  <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={priority_choices}>
+                  <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={category_choices}>
                     <Select.HiddenSelect />
                     <Select.Control>
                       <Select.Trigger>
@@ -111,9 +115,9 @@ export default function EditTodo({ todo, categories }: { todo: TodoForm; categor
                     <Portal>
                       <Select.Positioner>
                         <Select.Content>
-                          {categories.map((choice) => (
-                            <Select.Item item={choice} key={choice.id}>
-                              {choice.color}
+                          {category_choices.items.map((choice) => (
+                            <Select.Item item={choice} key={choice.value}>
+                              {choice.label}
                               <Select.ItemIndicator />
                             </Select.Item>
                           ))}

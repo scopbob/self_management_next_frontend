@@ -88,7 +88,7 @@ export type Category = {
 
 export type Todo = {
   id: number;
-  category?: Category[];
+  category?: Category;
   title: string;
   text?: string;
   due: string;
@@ -99,7 +99,7 @@ export type Todo = {
 
 export type TodoSubmit = {
   id?: number;
-  category?: number;
+  category_id: number;
   title: string;
   text?: string;
   due: string;
