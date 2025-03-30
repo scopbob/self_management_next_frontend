@@ -26,24 +26,14 @@ export const TodoFormSchema = z.object({
       message: "Invalid datetime format",
     }
   ),
-  due: z
-    .string()
-    .refine(
-      (datetime) => {
-        return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/.test(datetime);
-      },
-      {
-        message: "Invalid datetime format",
-      }
-    )
-    .refine(
-      (due) => {
-        return new Date() < new Date(due);
-      },
-      {
-        message: "Due must be after now",
-      }
-    ),
+  due: z.string().refine(
+    (datetime) => {
+      return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/.test(datetime);
+    },
+    {
+      message: "Invalid datetime format",
+    }
+  ),
   progress: z.number().min(0, "Progress cannot be less than 0").max(100, "Progress cannot be more than 100"), // 0~100の間
   category: z.string().array(), // OptionalなカテゴリーID
   priority: priorityEnum.array(), // 高, 中, 低のいずれか
