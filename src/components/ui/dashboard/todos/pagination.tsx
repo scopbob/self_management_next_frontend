@@ -6,15 +6,17 @@ import { ButtonGroup, IconButton, type IconButtonProps, Pagination as ChakraPagi
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 
 export default function Pagination({ count, pageSize }: { count: number; pageSize: number }) {
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
 
   const PaginationLink = (props: IconButtonProps & { page?: "prev" | "next" | number }) => {
+    const params = new URLSearchParams(searchParams);
     const { page, ...rest } = props;
     const pagination = usePaginationContext();
     const pageValue = () => {
-      if (page === "prev") return pagination.previousPage;
-      if (page === "next") return pagination.nextPage;
+      if (page === "prev") return pagination.previousPage || 1;
+      if (page === "next") return pagination.nextPage || pagination.totalPages;
       return page;
     };
     const isActive = () => {
@@ -23,9 +25,10 @@ export default function Pagination({ count, pageSize }: { count: number; pageSiz
       return false;
     };
     const isSelected = page === currentPage;
+    params.set("page", String(pageValue()));
     return (
       <IconButton asChild {...rest} variant={isSelected ? "solid" : "ghost"} disabled={isActive()}>
-        {isActive() ? <div>{props.children}</div> : <NextLink href={`?page=${pageValue()}`}>{props.children}</NextLink>}
+        {isActive() ? <div>{props.children}</div> : <NextLink href={`${pathname}?${params.toString()}`}>{props.children}</NextLink>}
       </IconButton>
     );
   };

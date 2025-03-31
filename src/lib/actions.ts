@@ -6,11 +6,14 @@ import { AuthError } from "next-auth";
 import { SignupFormSchema, FormState, ApiErrorDetail, Todo, TodoFormSchema, TodoSubmit, Category } from "@/lib/definitions";
 import { getIsTokenValid } from "./auth-helpers";
 
-export async function fetchTodosCount() {
+export async function fetchTodosCount(search: string) {
   const session = await auth();
   const accessToken = session?.accessToken;
+  const queryParams = new URLSearchParams({
+    search: search,
+  });
   try {
-    const response = await fetch(process.env.API_URL + "/todo/count", {
+    const response = await fetch(process.env.API_URL + `/todo/count?${queryParams}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

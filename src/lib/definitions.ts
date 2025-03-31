@@ -49,19 +49,17 @@ export const TodoCreateSchema = TodoFormSchema.omit({ id: true }).refine(
   }
 );
 
-export const TodoGenerateSchema = TodoFormSchema.omit({ id: true, category: true })
-  .extend({ category: z.number() })
-  .refine(
-    (data) => {
-      const start = new Date(data.start);
-      const due = new Date(data.due);
-      return start <= due;
-    },
-    {
-      message: "Start date must be before or equal to due date",
-      path: ["start"], // エラーメッセージをstartフィールドに関連付ける
-    }
-  );
+export const TodoGenerateSchema = TodoFormSchema.omit({ id: true, category: true }).refine(
+  (data) => {
+    const start = new Date(data.start);
+    const due = new Date(data.due);
+    return start <= due;
+  },
+  {
+    message: "Start date must be before or equal to due date",
+    path: ["start"], // エラーメッセージをstartフィールドに関連付ける
+  }
+);
 
 const colorRegex = /^(#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})|rgba\(\s*(?:25[0-5]|2[0-4]\d|1\d\d|\d{1,2})\s*,\s*(?:25[0-5]|2[0-4]\d|1\d\d|\d{1,2})\s*,\s*(?:25[0-5]|2[0-4]\d|1\d\d|\d{1,2})\s*,\s*(?:0|0?\.\d+|1)\s*\))$/; // hex or rgba
 

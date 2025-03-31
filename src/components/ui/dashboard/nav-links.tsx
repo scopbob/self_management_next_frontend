@@ -5,7 +5,7 @@ import { HStack, Button } from "@chakra-ui/react";
 import { FiHome } from "react-icons/fi";
 import { BiCategory } from "react-icons/bi";
 import { GrTask } from "react-icons/gr";
-import { GiProgression } from "react-icons/gi";
+import { FaRegLightbulb } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 
 // Map of links to display in the side navigation.
@@ -18,7 +18,7 @@ const links = [
     href: "/dashboard/categories",
     icon: BiCategory,
   },
-  { name: "Progress", href: "/dashboard/progress", icon: GiProgression },
+  { name: "Suggest", href: "/dashboard/suggest", icon: FaRegLightbulb },
 ];
 
 export default function NavLinks() {

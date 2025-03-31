@@ -22,7 +22,7 @@ export default async function Page(props: {
   const search = searchParams?.search || "";
   const currentPage = Number(searchParams?.page) || 1;
   const ITEMS_PER_PAGE = 5;
-  const count = (await fetchTodosCount()) || 1;
+  const count = (await fetchTodosCount(search)) || 1;
 
   return (
     <VStack h="full" p={2}>
