@@ -1,13 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Category, Todo } from "@/lib/definitions";
 import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden, ColorSwatch } from "@chakra-ui/react";
 import { FiSave } from "react-icons/fi";
-import { editTodo } from "@/lib/actions";
+import { createTodo } from "@/lib/actions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TodoEditSchema } from "@/lib/definitions";
+import { TodoCreateSchema } from "@/lib/definitions";
 
 function convetDateToIso(d: Date) {
   return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
@@ -26,18 +27,21 @@ export default function EditTodo({ todo, categories }: { todo: Todo; categories:
     items: [{ label: "カテゴリーなし", value: "0", color: "" }, ...categories.map((category) => ({ label: category.name, value: String(category.id), color: category.color }))],
   });
 
-  type FormValues = z.infer<typeof TodoEditSchema>;
-
+  type FormValues = z.infer<typeof TodoCreateSchema>;
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
   } = useForm<FormValues>({
-    resolver: zodResolver(TodoEditSchema),
+    resolver: zodResolver(TodoCreateSchema),
     defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due)), priority: [todo.priority], category: todo.category === null ? ["0"] : [String(todo.category)] },
   });
-  const onSubmit = handleSubmit((data) => editTodo({ ...data, id: todo.id, due: new Date(data.due).toISOString(), start: new Date(data.start).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) }));
+  const onSubmit = handleSubmit((data) => {
+    setIsSubmitted(true);
+    createTodo({ ...data, due: new Date(data.due).toISOString(), start: new Date(data.start).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) }, false);
+  });
   return (
     <VStack align="start" p={6} w="full">
       <VStack w="full" p={4} spaceY={2} align="start" borderRadius="md" borderWidth="1px">
@@ -162,7 +166,7 @@ export default function EditTodo({ todo, categories }: { todo: Todo; categories:
               <Field.ErrorText>{errors.priority?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Button type="submit" colorPalette="green">
+            <Button type="submit" colorPalette="green" disabled={isSubmitted}>
               <FiSave />
               保存
             </Button>

@@ -37,7 +37,7 @@ export default function CreateTodo({ categories }: { categories: Category[] }) {
     resolver: zodResolver(TodoCreateSchema),
     defaultValues: { start: convetDateToIso(new Date()), due: convetDateToIso(new Date()), progress: 0 },
   });
-  const onSubmit = handleSubmit((data) => createTodo({ ...data, due: new Date(data.due).toISOString(), start: new Date(data.start).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) }));
+  const onSubmit = handleSubmit((data) => createTodo({ ...data, due: new Date(data.due).toISOString(), start: new Date(data.start).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) }, true));
   return (
     <VStack w="full" p={4} spaceY={2} align="start" borderRadius="md" borderWidth="1px">
       <form onSubmit={onSubmit} style={{ width: "100%" }}>

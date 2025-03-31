@@ -87,7 +87,7 @@ export async function fetchTodo(id: number) {
   } catch (error) {}
 }
 
-export async function createTodo(todo: TodoSubmit) {
+export async function createTodo(todo: TodoSubmit, needsRedirect: boolean) {
   const session = await auth();
   const accessToken = session?.accessToken;
 
@@ -111,7 +111,7 @@ export async function createTodo(todo: TodoSubmit) {
   } catch (error) {
     console.error(error);
   }
-  await redirect("/dashboard/todos");
+  if (needsRedirect) await redirect("/dashboard/todos");
 }
 
 export async function editTodo(todo: TodoSubmit) {

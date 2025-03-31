@@ -7,7 +7,7 @@ export default async function TodosTable({ search, currentPage, items_per_page }
   const todos = await fetchFilteredTodos(search, currentPage, items_per_page); // Fetch data inside the component
   return (
     <VStack spaceY="0.5" w="full">
-      <For each={todos}>{(category: Todo, i: number) => <TodoCard todo={category} key={category.id} />}</For>
+      <For each={todos}>{(todo: Todo, i: number) => <TodoCard todo={todo} key={todo.id} />}</For>
     </VStack>
   );
 }
