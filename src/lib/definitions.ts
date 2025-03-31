@@ -49,6 +49,20 @@ export const TodoCreateSchema = TodoFormSchema.omit({ id: true }).refine(
   }
 );
 
+export const TodoGenerateSchema = TodoFormSchema.omit({ id: true, category: true })
+  .extend({ category: z.number() })
+  .refine(
+    (data) => {
+      const start = new Date(data.start);
+      const due = new Date(data.due);
+      return start <= due;
+    },
+    {
+      message: "Start date must be before or equal to due date",
+      path: ["start"], // エラーメッセージをstartフィールドに関連付ける
+    }
+  );
+
 const colorRegex = /^(#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})|rgba\(\s*(?:25[0-5]|2[0-4]\d|1\d\d|\d{1,2})\s*,\s*(?:25[0-5]|2[0-4]\d|1\d\d|\d{1,2})\s*,\s*(?:25[0-5]|2[0-4]\d|1\d\d|\d{1,2})\s*,\s*(?:0|0?\.\d+|1)\s*\))$/; // hex or rgba
 
 export const CategoryFormSchema = z.object({ id: z.number(), name: z.string({ required_error: "Title is required" }).min(1, "Title is required").max(50, "Title cannot be longer than 50 characters"), color: z.string().regex(colorRegex, "Invalid color format") });
@@ -69,8 +83,9 @@ export type Category = {
 };
 
 export type Todo = {
-  id: number;
+  id?: number;
   category?: Category;
+  category_id?: number;
   title: string;
   text?: string;
   due: string;
@@ -82,17 +97,6 @@ export type Todo = {
 export type TodoSubmit = {
   id?: number;
   category_id: number;
-  title: string;
-  text?: string;
-  due: string;
-  start: string;
-  progress: number;
-  priority: "Hi" | "Md" | "Lo";
-};
-
-export type TodoForm = {
-  id: number;
-  category: number;
   title: string;
   text?: string;
   due: string;

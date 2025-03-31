@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { signIn, signOut, auth } from "@/auth";
 import { AuthError } from "next-auth";
-import { SignupFormSchema, FormState, ApiErrorDetail, Todo, TodoFormSchema, TodoForm, TodoSubmit, Category } from "@/lib/definitions";
+import { SignupFormSchema, FormState, ApiErrorDetail, Todo, TodoFormSchema, TodoSubmit, Category } from "@/lib/definitions";
 import { getIsTokenValid } from "./auth-helpers";
 
 export async function fetchTodosCount() {

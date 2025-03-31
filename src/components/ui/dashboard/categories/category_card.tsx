@@ -2,7 +2,7 @@
 
 import NextLink from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button, IconButton, Checkbox, Card, Heading, Progress, HStack, Input, Text, VStack, Field, Fieldset, Link } from "@chakra-ui/react";
+import { Box, IconButton, Checkbox, Card, Heading, Progress, HStack, Input, Text, VStack, ColorSwatch, Fieldset, Link } from "@chakra-ui/react";
 import { BsPersonWalking } from "react-icons/bs";
 import { LuAlarmClock } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";
@@ -31,6 +31,8 @@ export default function TodoCard({ category }: { category: Category }) {
               <MdEdit />
             </IconButton>
           </NextLink>
+          <Box w="full"></Box>
+          <ColorSwatch value={category.color} size="xl" />
         </HStack>
       </Card.Header>
       <VStack w="full"></VStack>

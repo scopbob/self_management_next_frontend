@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { Category, TodoForm } from "@/lib/definitions";
+import { Category, Todo } from "@/lib/definitions";
 import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden, ColorSwatch } from "@chakra-ui/react";
 import { FiSave } from "react-icons/fi";
 import { editTodo } from "@/lib/actions";
@@ -21,7 +21,7 @@ const priority_choices = createListCollection({
   ],
 });
 
-export default function EditTodo({ todo, categories }: { todo: TodoForm; categories: Category[] }) {
+export default function EditTodo({ todo, categories }: { todo: Todo; categories: Category[] }) {
   const category_choices = createListCollection({
     items: [{ label: "カテゴリーなし", value: "0", color: "" }, ...categories.map((category) => ({ label: category.name, value: String(category.id), color: category.color }))],
   });
