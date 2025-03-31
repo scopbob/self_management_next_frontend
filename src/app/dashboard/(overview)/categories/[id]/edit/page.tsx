@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { fetchTodo } from "@/lib/actions";
-import TodoDetail from "@/components/ui/dashboard/todos/detail";
+import { fetchCategory } from "@/lib/actions";
+import CategoryEdit from "@/components/ui/dashboard/categories/edit_form";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  const todo = await fetchTodo(Number(params.id)); // Fetch data inside the component
+  const category = await fetchCategory(Number(params.id));
   return (
     <main>
-      <TodoDetail todo={todo} />
+      <CategoryEdit category={category} />
     </main>
   );
 }

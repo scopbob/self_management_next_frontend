@@ -70,7 +70,7 @@ const useTime = (due_str: string, start_str: string) => {
   return remaining;
 };
 
-export default function TodoCard(todo: Todo) {
+export default function TodoCard({ todo }: { todo: Todo }) {
   const remaining = useTime(todo.due, todo.start);
   const priorityColors: Record<string, { bg: string; border: string }> = {
     Hi: { bg: "red.50", border: "red.500" }, // high

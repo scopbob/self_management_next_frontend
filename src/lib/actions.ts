@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { signIn, signOut, auth } from "@/auth";
 import { AuthError } from "next-auth";
-import { SignupFormSchema, FormState, ApiErrorDetail, Todo, TodoFormSchema, TodoForm, TodoSubmit } from "@/lib/definitions";
+import { SignupFormSchema, FormState, ApiErrorDetail, Todo, TodoFormSchema, TodoForm, TodoSubmit, Category } from "@/lib/definitions";
 import { getIsTokenValid } from "./auth-helpers";
 
 export async function fetchTodosCount() {
@@ -88,9 +88,6 @@ export async function createTodo(todo: TodoSubmit) {
   const session = await auth();
   const accessToken = session?.accessToken;
 
-  todo.due = new Date(todo.due).toISOString();
-  todo.start = new Date(todo.start).toISOString();
-
   try {
     const response = await fetch(process.env.API_URL + `/todo/create`, {
       method: "POST",
@@ -118,9 +115,6 @@ export async function editTodo(todo: TodoSubmit) {
   const session = await auth();
   const accessToken = session?.accessToken;
 
-  todo.due = new Date(todo.due).toISOString();
-  todo.start = new Date(todo.start).toISOString();
-
   try {
     const response = await fetch(process.env.API_URL + `/todo/${todo.id}`, {
       method: "PUT",
@@ -137,12 +131,59 @@ export async function editTodo(todo: TodoSubmit) {
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
+      console.log(data.detail);
       return { errors: error_details };
     }
   } catch (error) {
     console.error(error);
   }
   await redirect("/dashboard/todos");
+}
+
+export async function fetchCategoriesCount() {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  try {
+    const response = await fetch(process.env.API_URL + "/todo/category/count", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      throw Error;
+    }
+    return Number(data);
+  } catch (error) {}
+}
+
+export async function fetchCategory(id: number) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/category/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+        console.log(data);
+      });
+    }
+    return data;
+  } catch (error) {}
 }
 
 export async function fetchCategories() {
@@ -186,13 +227,18 @@ export async function fetchFilteredCategories(search: string, currentPage: numbe
     offset: String(offset),
   });
   try {
-    const response = await fetch(process.env.API_URL + `/todo/?${queryParams}`, {
+    const response = await fetch(process.env.API_URL + `/todo/category/?${queryParams}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });
+
+    if (response.status == 404) {
+      console.log("not found");
+      return;
+    }
     const data = await response.json();
     if (!response.ok) {
       let error_details: { [key: string]: string[] } = {};
@@ -206,6 +252,58 @@ export async function fetchFilteredCategories(search: string, currentPage: numbe
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function createCategory(category: Category) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/category/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(category),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      return { errors: error_details };
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  await redirect("/dashboard/categories");
+}
+
+export async function editCategory(category: Category) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/category/${category.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(category),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      return { errors: error_details };
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  await redirect("/dashboard/categories");
 }
 
 export async function createAccount(State: FormState, formData: FormData) {

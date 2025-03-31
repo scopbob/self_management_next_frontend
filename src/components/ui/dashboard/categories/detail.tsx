@@ -1,10 +1,10 @@
 import NextLink from "next/link";
-import { Todo } from "@/lib/definitions";
+import { Category } from "@/lib/definitions";
 import { Button, Heading, Text, VStack, HStack, Box, Progress, IconButton, For } from "@chakra-ui/react";
 import { FiChevronLeft, FiEdit, FiTrash } from "react-icons/fi";
 
 // Todo 詳細ページコンポーネント
-export default function TodoDetail({ todo }: { todo: Todo }) {
+export default function CategoryDetail({ category }: { category: Category }) {
   return (
     <VStack align="start" p={6} h="100vh" w="full">
       <IconButton size="xl" variant="ghost" asChild>
@@ -15,23 +15,10 @@ export default function TodoDetail({ todo }: { todo: Todo }) {
       <Heading size="3xl">Detail:</Heading>
       <VStack w="full" p={4} align="start" borderRadius="md" borderWidth="1px">
         <HStack>
-          <Heading>{todo.title}</Heading>
-          <Text fontWeight="bold">{todo?.category?.name}</Text>
-          <Text color="fg.muted">Powers: {todo?.category?.color}</Text>
-        </HStack>
-        <Text mt={2}>{todo.text}</Text>
-        <HStack mt={4}>
-          <Text>開始: {new Date(todo.start).toLocaleString().slice(0, -3)}</Text>
-        </HStack>
-        <HStack mt={2}>
-          <Text>期限: {new Date(todo.due).toLocaleString().slice(0, -3)}</Text>
-        </HStack>
-        <HStack mt={4} w="full" spaceX="4">
-          <Text fontSize="xl">進捗: {todo.progress} /100</Text>
-          <Text fontSize="xl">優先度: {todo.priority}</Text>
+          <Heading>{category?.name}</Heading>
         </HStack>
         <HStack mt={6}>
-          <NextLink href={`${todo.id}/edit`}>
+          <NextLink href={`${category?.id}/edit`}>
             <Button colorPalette="green">
               <FiEdit />
               編集

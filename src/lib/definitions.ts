@@ -18,22 +18,8 @@ export const TodoFormSchema = z.object({
   id: z.number(),
   title: z.string({ required_error: "Title is required" }).min(1, "Title is required").max(50, "Title cannot be longer than 50 characters"),
   text: z.string().max(500, "Text cannot be longer than 500 characters").optional(), // 最大500文字、空でもOK
-  start: z.string().refine(
-    (val) => {
-      return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/.test(val);
-    },
-    {
-      message: "Invalid datetime format",
-    }
-  ),
-  due: z.string().refine(
-    (datetime) => {
-      return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/.test(datetime);
-    },
-    {
-      message: "Invalid datetime format",
-    }
-  ),
+  start: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/, "Invalid datetime format"),
+  due: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2}|Z)?$/, "Invalid datetime format"),
   progress: z.number().min(0, "Progress cannot be less than 0").max(100, "Progress cannot be more than 100"), // 0~100の間
   category: z.string().array(), // OptionalなカテゴリーID
   priority: priorityEnum.array(), // 高, 中, 低のいずれか
@@ -63,6 +49,12 @@ export const TodoCreateSchema = TodoFormSchema.omit({ id: true }).refine(
   }
 );
 
+const colorRegex = /^(#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})|rgba\(\s*(?:25[0-5]|2[0-4]\d|1\d\d|\d{1,2})\s*,\s*(?:25[0-5]|2[0-4]\d|1\d\d|\d{1,2})\s*,\s*(?:25[0-5]|2[0-4]\d|1\d\d|\d{1,2})\s*,\s*(?:0|0?\.\d+|1)\s*\))$/; // hex or rgba
+
+export const CategoryFormSchema = z.object({ id: z.number(), name: z.string({ required_error: "Title is required" }).min(1, "Title is required").max(50, "Title cannot be longer than 50 characters"), color: z.string().regex(colorRegex, "Invalid color format") });
+
+export const CategoryCreateSchema = CategoryFormSchema.omit({ id: true });
+
 export type FormState =
   | {
       errors: { [key: string]: string[] };
@@ -71,7 +63,7 @@ export type FormState =
   | undefined;
 
 export type Category = {
-  id: number;
+  id?: number;
   name: string;
   color: string;
 };

@@ -2,7 +2,7 @@
 
 import { Controller, useForm } from "react-hook-form";
 import { Category, TodoForm } from "@/lib/definitions";
-import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden } from "@chakra-ui/react";
+import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden, ColorSwatch } from "@chakra-ui/react";
 import { FiSave } from "react-icons/fi";
 import { editTodo } from "@/lib/actions";
 import { z } from "zod";
@@ -23,7 +23,7 @@ const priority_choices = createListCollection({
 
 export default function EditTodo({ todo, categories }: { todo: TodoForm; categories: Category[] }) {
   const category_choices = createListCollection({
-    items: [{ label: "カテゴリーなし", value: "0" }, ...categories.map((category) => ({ label: category.name, value: String(category.id) }))],
+    items: [{ label: "カテゴリーなし", value: "0", color: "" }, ...categories.map((category) => ({ label: category.name, value: String(category.id), color: category.color }))],
   });
 
   type FormValues = z.infer<typeof TodoEditSchema>;
@@ -35,19 +35,18 @@ export default function EditTodo({ todo, categories }: { todo: TodoForm; categor
     control,
   } = useForm<FormValues>({
     resolver: zodResolver(TodoEditSchema),
-    defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due + "")), priority: [todo.priority], category: todo.category === null ? ["0"] : [String(todo.category)] },
+    defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due)), priority: [todo.priority], category: todo.category === null ? ["0"] : [String(todo.category)] },
   });
 
-  const onSubmit = handleSubmit((data) => editTodo({ ...data, due: new Date(todo.due).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) }));
+  const onSubmit = handleSubmit((data) => {
+    editTodo({ ...data, id: todo.id, due: new Date(data.due).toISOString(), start: new Date(data.start).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) });
+  });
   return (
     <VStack align="start" p={6} w="full">
       <Heading size="3xl">Edit:</Heading>
       <VStack w="full" p={4} spaceY={2} align="start" borderRadius="md" borderWidth="1px">
         <form onSubmit={onSubmit} style={{ width: "100%" }}>
           <Fieldset.Root invalid={!!errors}>
-            <VisuallyHidden asChild>
-              <input {...register("id")} />
-            </VisuallyHidden>
             <Field.Root w="1/2" invalid={!!errors?.title}>
               <Field.Label>Title</Field.Label>
               <Input {...register("title")}></Input>
@@ -117,8 +116,11 @@ export default function EditTodo({ todo, categories }: { todo: TodoForm; categor
                         <Select.Content>
                           {category_choices.items.map((choice) => (
                             <Select.Item item={choice} key={choice.value}>
-                              {choice.label}
-                              <Select.ItemIndicator />
+                              <HStack w="full">
+                                <Select.ItemText colorPalette="blue">{choice.label}</Select.ItemText>
+                                <Select.ItemIndicator />
+                                <ColorSwatch value={choice.color} alignSelf="end" />
+                              </HStack>
                             </Select.Item>
                           ))}
                         </Select.Content>

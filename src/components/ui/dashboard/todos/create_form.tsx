@@ -2,7 +2,7 @@
 
 import { Controller, useForm } from "react-hook-form";
 import { Category, TodoForm } from "@/lib/definitions";
-import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden } from "@chakra-ui/react";
+import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden, Stack, ColorSwatch } from "@chakra-ui/react";
 import { FiSave } from "react-icons/fi";
 import { createTodo, fetchCategories } from "@/lib/actions";
 import { z } from "zod";
@@ -23,7 +23,7 @@ const priority_choices = createListCollection({
 
 export default function CreateTodo({ categories }: { categories: Category[] }) {
   const category_choices = createListCollection({
-    items: [{ label: "カテゴリーなし", value: "0" }, ...categories.map((category) => ({ label: category.name, value: String(category.id) }))],
+    items: [{ label: "カテゴリーなし", value: "0", color: "" }, ...categories.map((category) => ({ label: category.name, value: String(category.id), color: category.color }))],
   });
 
   type FormValues = z.infer<typeof TodoCreateSchema>;
@@ -37,7 +37,7 @@ export default function CreateTodo({ categories }: { categories: Category[] }) {
     resolver: zodResolver(TodoCreateSchema),
     defaultValues: { start: convetDateToIso(new Date()), due: convetDateToIso(new Date()), progress: 0 },
   });
-  const onSubmit = handleSubmit((data) => createTodo({ ...data, priority: data.priority[0], category_id: Number(data.category[0]) }));
+  const onSubmit = handleSubmit((data) => createTodo({ ...data, due: new Date(data.due).toISOString(), start: new Date(data.start).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) }));
   return (
     <VStack w="full" p={4} spaceY={2} align="start" borderRadius="md" borderWidth="1px">
       <form onSubmit={onSubmit} style={{ width: "100%" }}>
@@ -110,8 +110,11 @@ export default function CreateTodo({ categories }: { categories: Category[] }) {
                       <Select.Content>
                         {category_choices.items.map((choice) => (
                           <Select.Item item={choice} key={choice.value}>
-                            {choice.label}
-                            <Select.ItemIndicator />
+                            <HStack w="full">
+                              <Select.ItemText colorPalette="blue">{choice.label}</Select.ItemText>
+                              <Select.ItemIndicator />
+                              <ColorSwatch value={choice.color} alignSelf="end" />
+                            </HStack>
                           </Select.Item>
                         ))}
                       </Select.Content>
