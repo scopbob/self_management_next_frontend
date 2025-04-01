@@ -3,10 +3,10 @@ import { Todo } from "@/lib/definitions";
 import { fetchFilteredTodos } from "@/lib/actions";
 
 export default async function LatestTodos({ number }: { number: number }) {
-  const todos = await fetchFilteredTodos("", 1, number);
+  const todos = await fetchFilteredTodos("", 1, number, "due", false);
   return (
     <Box spaceY="0.5" m="6" p="10" w="full">
-      <Heading size="3xl">Latest Todos</Heading>
+      <Heading size="3xl">Upcomig Todos</Heading>
       <Table.Root size="sm">
         <Table.Header>
           <Table.Row>

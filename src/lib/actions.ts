@@ -33,7 +33,7 @@ export async function fetchTodosCount(search: string) {
   } catch (error) {}
 }
 
-export async function fetchFilteredTodos(search: string, currentPage: number, items_per_page: number) {
+export async function fetchFilteredTodos(search: string, currentPage: number, items_per_page: number, order: string, reverse: boolean) {
   const session = await auth();
   const accessToken = session?.accessToken;
   const offset = (currentPage - 1) * items_per_page;
@@ -41,6 +41,8 @@ export async function fetchFilteredTodos(search: string, currentPage: number, it
     search: search,
     limit: String(items_per_page),
     offset: String(offset),
+    order: order,
+    reverse: String(reverse),
   });
   try {
     const response = await fetch(process.env.API_URL + `/todo/?${queryParams}`, {
