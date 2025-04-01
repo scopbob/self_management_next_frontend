@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import SuggestTodayTodo from "@/components/ui/dashboard/ai_sdk/today_plan";
 import { Box, Heading } from "@chakra-ui/react";
+import { lusitana } from "@/components/ui/fonts";
 import PromptForm from "@/components/ui/dashboard/ai_sdk/suggest_form";
 
 export const metadata: Metadata = {
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <Box>
-      <Heading size="4xl">Generate Today's Plan</Heading>
+      <Heading size="4xl" className={lusitana.className} px="3" pt="5">
+        Generate today's Plan
+      </Heading>
       <PromptForm />
     </Box>
   );

@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { fetchCategories } from "@/lib/actions";
-import { For, Heading } from "@chakra-ui/react";
+import { For, Heading, Box } from "@chakra-ui/react";
 import TodoGenerateForm from "@/components/ui/dashboard/todos/generate_form";
 import { generateTodayTodo } from "@/lib/generative_ai";
+import { lusitana } from "@/components/ui/fonts";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -17,9 +18,18 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const [todos, categories] = await Promise.all([generateTodayTodo(searchParams?.text), fetchCategories()]);
   return (
-    <main>
-      <Heading size="4xl">Here is Results</Heading>
-      <For each={todos}>{(todo, i) => <TodoGenerateForm key={i} todo={todo} categories={categories} />}</For>
-    </main>
+    <Box>
+      <Heading size="4xl" className={lusitana.className} px="3" pt="5">
+        Results
+      </Heading>
+      <For each={todos}>
+        {(todo, i) => (
+          <Box key={i} px="2">
+            <Heading>{i + 1}</Heading>
+            <TodoGenerateForm key={i} todo={todo} categories={categories} />
+          </Box>
+        )}
+      </For>
+    </Box>
   );
 }

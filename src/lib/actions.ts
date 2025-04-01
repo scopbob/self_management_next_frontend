@@ -5,6 +5,7 @@ import { signIn, signOut, auth } from "@/auth";
 import { AuthError } from "next-auth";
 import { SignupFormSchema, FormState, ApiErrorDetail, Todo, TodoFormSchema, TodoSubmit, Category } from "@/lib/definitions";
 import { getIsTokenValid } from "./auth-helpers";
+import { revalidatePath } from "next/cache";
 
 export async function fetchTodosCount(search: string) {
   const session = await auth();
@@ -141,6 +142,37 @@ export async function editTodo(todo: TodoSubmit) {
     console.error(error);
   }
   await redirect("/dashboard/todos");
+}
+
+export async function deleteTodo(id: number) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+        console.log(data);
+      });
+    }
+    return data;
+  } catch (error) {}
+}
+
+export async function deleteTodos(ids: number[]) {
+  try {
+    const datas = await Promise.all(ids.map((id) => deleteTodo(id)));
+    revalidatePath("/dashboard/todos");
+    return datas;
+  } catch (error) {}
 }
 
 export async function fetchCategoriesCount() {
@@ -307,6 +339,37 @@ export async function editCategory(category: Category) {
     console.error(error);
   }
   await redirect("/dashboard/categories");
+}
+
+export async function deleteCategory(id: number) {
+  const session = await auth();
+  const accessToken = session?.accessToken;
+  try {
+    const response = await fetch(process.env.API_URL + `/todo/category/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      let error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+        console.log(data);
+      });
+    }
+    return data;
+  } catch (error) {}
+}
+
+export async function deleteCategories(ids: number[]) {
+  try {
+    const datas = await Promise.all(ids.map((id) => deleteCategory(id)));
+    revalidatePath("/dashboard/categories");
+    return datas;
+  } catch (error) {}
 }
 
 export async function createAccount(State: FormState, formData: FormData) {

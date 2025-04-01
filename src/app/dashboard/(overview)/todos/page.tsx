@@ -29,7 +29,7 @@ export default async function Page(props: {
       <Heading size="4xl" alignSelf="start" className={lusitana.className} px="3" pt="5">
         Todo
       </Heading>
-      <HStack px="2" pb="2" spaceX="1" w="full">
+      <HStack px="2" mb="1" spaceX="1" w="full">
         <Search placeholder="Search todos..." />
         <Button colorPalette="blue" variant="solid" size="lg" asChild>
           <NextLink href="todos/create">Create</NextLink>
@@ -37,7 +37,7 @@ export default async function Page(props: {
       </HStack>
       <TodosTable search={search} currentPage={currentPage} items_per_page={ITEMS_PER_PAGE} />
       <Box flexGrow="1" display={{ base: "none", md: "block" }} />
-      <VStack mt="auto" py="4" w="full">
+      <VStack py="2" w="full">
         <Pagination count={count} pageSize={ITEMS_PER_PAGE} />
       </VStack>
     </VStack>

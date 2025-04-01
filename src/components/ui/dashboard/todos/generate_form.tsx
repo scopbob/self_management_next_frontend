@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Category, Todo } from "@/lib/definitions";
 import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden, ColorSwatch } from "@chakra-ui/react";
-import { FiSave } from "react-icons/fi";
+import { FiSave, FiCheck } from "react-icons/fi";
 import { createTodo } from "@/lib/actions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,7 +28,7 @@ export default function EditTodo({ todo, categories }: { todo: Todo; categories:
   });
 
   type FormValues = z.infer<typeof TodoCreateSchema>;
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [disabled, idDisabled] = useState(false);
   const {
     register,
     handleSubmit,
@@ -36,10 +36,11 @@ export default function EditTodo({ todo, categories }: { todo: Todo; categories:
     control,
   } = useForm<FormValues>({
     resolver: zodResolver(TodoCreateSchema),
+    disabled,
     defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due)), priority: [todo.priority], category: todo.category === null ? ["0"] : [String(todo.category)] },
   });
   const onSubmit = handleSubmit((data) => {
-    setIsSubmitted(true);
+    idDisabled(true);
     createTodo({ ...data, due: new Date(data.due).toISOString(), start: new Date(data.start).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) }, false);
   });
   return (
@@ -101,7 +102,7 @@ export default function EditTodo({ todo, categories }: { todo: Todo; categories:
                 control={control}
                 name="category"
                 render={({ field }) => (
-                  <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={category_choices}>
+                  <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={category_choices} disabled={field.disabled}>
                     <Select.HiddenSelect />
                     <Select.Control>
                       <Select.Trigger>
@@ -138,7 +139,7 @@ export default function EditTodo({ todo, categories }: { todo: Todo; categories:
                 control={control}
                 name="priority"
                 render={({ field }) => (
-                  <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={priority_choices}>
+                  <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={priority_choices} disabled={field.disabled}>
                     <Select.HiddenSelect />
                     <Select.Control>
                       <Select.Trigger>
@@ -166,9 +167,18 @@ export default function EditTodo({ todo, categories }: { todo: Todo; categories:
               <Field.ErrorText>{errors.priority?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Button type="submit" colorPalette="green" disabled={isSubmitted}>
-              <FiSave />
-              保存
+            <Button type="submit" colorPalette="green" disabled={disabled}>
+              {disabled ? (
+                <>
+                  <FiCheck />
+                  保存済み
+                </>
+              ) : (
+                <>
+                  <FiSave />
+                  保存
+                </>
+              )}
             </Button>
             <FieldsetErrorText>{errors.root?.message}</FieldsetErrorText>
           </Fieldset.Root>

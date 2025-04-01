@@ -26,7 +26,7 @@ export default function PromptForm() {
     router.push(`suggest/result?text=${data.text}`);
   });
   return (
-    <VStack w="full" p={4} spaceY={2} align="start" borderRadius="md" borderWidth="1px">
+    <VStack m={4} p={4} spaceY={2} align="start" borderRadius="md" borderWidth="1px">
       <form onSubmit={onSubmit} style={{ width: "100%" }}>
         <Fieldset.Root invalid={!!errors}>
           <Field.Root invalid={!!errors?.text}>

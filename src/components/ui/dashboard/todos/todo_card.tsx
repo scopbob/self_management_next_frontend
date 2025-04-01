@@ -82,13 +82,6 @@ export default function TodoCard({ todo }: { todo: Todo }) {
     <Card.Root w="full" px="6" py="3" size="sm" bg={bg} boxShadow="xl" borderRadius="lg" borderColor={border} borderWidth="2px">
       <Card.Header w="full" px="0" py="2">
         <HStack w="full" justify="start">
-          <Checkbox.Root>
-            <Checkbox.HiddenInput />
-            <Checkbox.Control>
-              <Checkbox.Indicator />
-            </Checkbox.Control>
-            <Checkbox.Label />
-          </Checkbox.Root>
           <Link asChild>
             <NextLink href={`todos/${String(todo.id)}`}>
               <Heading>{todo.title}</Heading>
