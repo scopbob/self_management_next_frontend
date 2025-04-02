@@ -17,6 +17,7 @@ export default async function Page(props: {
 }) {
   const searchParams = await props.searchParams;
   const [todos, categories] = await Promise.all([generateTodayTodo(searchParams?.text), fetchCategories()]);
+
   return (
     <Box>
       <Heading size="4xl" className={lusitana.className} px="3" pt="5">
