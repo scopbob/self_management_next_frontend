@@ -1,10 +1,11 @@
 import { Suspense } from "react";
+import NextLink from "next/link";
 import { Metadata } from "next";
 import { fetchCategories } from "@/lib/actions";
-import { For, Heading, Box } from "@chakra-ui/react";
+import { For, Heading, Box, Center, Text, Link } from "@chakra-ui/react";
 import TodoGenerateForm from "@/components/ui/dashboard/todos/generate_form";
 import { generateTodayTodo } from "@/lib/generative_ai";
-import { lusitana } from "@/components/ui/fonts";
+import { lusitana, orbitron } from "@/components/ui/fonts";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -25,12 +26,25 @@ export default async function Page(props: {
       </Heading>
       <For each={todos}>
         {(todo, i) => (
-          <Box key={i} px="2">
-            <Heading>{i + 1}</Heading>
+          <Box key={i} p="2">
+            <Center width="10" mb="1" borderWidth="medium" borderColor="black" borderRadius="md">
+              <Heading size="2xl" className={orbitron.className}>
+                {i + 1}
+              </Heading>
+            </Center>
             <TodoGenerateForm key={i} todo={todo} categories={categories} />
           </Box>
         )}
       </For>
+      <Center>
+        <Heading size="xl" px="3" py="5">
+          保存したTodoを
+          <Link colorPalette="teal" asChild>
+            <NextLink href="/dashboard/todos">確認</NextLink>
+          </Link>
+          する
+        </Heading>
+      </Center>
     </Box>
   );
 }

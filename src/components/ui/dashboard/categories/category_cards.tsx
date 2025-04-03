@@ -38,7 +38,7 @@ export default function TodosCards({ categories }: { categories: Category[] }) {
     <VStack alignItems="stretch" w="full">
       <form onSubmit={handleSubmit((data) => deleteCategories(data.id.map((x) => Number(x))))}>
         <Fieldset.Root invalid={invalid}>
-          <Button type="submit" size="sm" mb="1" colorPalette="red">
+          <Button type="submit" size="sm" alignSelf="start" mb="1" mx="2" colorPalette="red">
             <MdDelete />
             delete
           </Button>

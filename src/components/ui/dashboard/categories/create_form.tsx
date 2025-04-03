@@ -1,7 +1,6 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { Category, TodoForm } from "@/lib/definitions";
 import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden, Stack, ColorPicker, parseColor } from "@chakra-ui/react";
 import { FiSave } from "react-icons/fi";
 import { createCategory } from "@/lib/actions";

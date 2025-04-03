@@ -1,7 +1,7 @@
 "use client";
 
 import { VStack, For, HStack, Button, Checkbox, CheckboxGroup, Fieldset } from "@chakra-ui/react";
-import { Todo } from "@/lib/definitions";
+import { Category, Todo } from "@/lib/definitions";
 import { MdDelete } from "react-icons/md";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useController, useForm } from "react-hook-form";
@@ -17,7 +17,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function TodosCards({ todos }: { todos: Todo[] }) {
+export default function TodosCards({ todos, categories }: { todos: Todo[]; categories: Category[] }) {
   const {
     handleSubmit,
     control,
@@ -33,11 +33,13 @@ export default function TodosCards({ todos }: { todos: Todo[] }) {
   });
   const invalid = !!errors.id;
 
+  const categories_ids = categories.map((category) => category.id);
+
   return (
     <VStack alignItems="stretch" w="full">
       <form onSubmit={handleSubmit((data) => deleteTodos(data.id.map((x) => Number(x))))}>
         <Fieldset.Root invalid={invalid}>
-          <Button type="submit" size="sm" mb="1" colorPalette="red">
+          <Button type="submit" size="sm" alignSelf="start" mb="1" mx="2" colorPalette="red">
             <MdDelete />
             delete
           </Button>
@@ -53,7 +55,7 @@ export default function TodosCards({ todos }: { todos: Todo[] }) {
                       </Checkbox.Control>
                       <Checkbox.Label />
                     </Checkbox.Root>
-                    <TodoCard todo={todo} key={todo.id} />
+                    <TodoCard todo={todo} key={todo.id} category={categories[categories_ids.indexOf(todo.category)]} />
                   </HStack>
                 )}
               </For>

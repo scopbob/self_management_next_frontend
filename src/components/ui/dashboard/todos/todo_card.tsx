@@ -2,12 +2,12 @@
 
 import NextLink from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button, IconButton, Checkbox, Card, Heading, Progress, HStack, Input, Text, VStack, Field, Fieldset, Link } from "@chakra-ui/react";
+import { Button, IconButton, Checkbox, Card, Heading, Progress, HStack, Input, Text, VStack, Field, Fieldset, Link, Badge } from "@chakra-ui/react";
 import { BsPersonWalking } from "react-icons/bs";
 import { LuAlarmClock } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";
 import { useEffect, useState } from "react";
-import { Todo } from "@/lib/definitions";
+import { Category, Todo } from "@/lib/definitions";
 
 function calcRemainingTime(due_str: string) {
   const due = new Date(due_str);
@@ -41,11 +41,9 @@ const useTime = (due_str: string, start_str: string) => {
     const proportion = calcProportion(start_str, due_str);
     let timer = "";
     let dead = false;
+    const counter = calcRemainingTime(due_str);
+    const time = `${counter.weeks}週間${counter.days}日${counter.hours}時間${counter.mins}分`;
     if (proportion > 0) {
-      //display remaining time
-      const counter = calcRemainingTime(due_str);
-      const time = `${counter.weeks}週間${counter.days}日${counter.hours}時間${counter.mins}分`;
-
       //締め切り切れならば
       if (counter.dead) {
         timer = "期限から" + time + "経過";
@@ -56,7 +54,7 @@ const useTime = (due_str: string, start_str: string) => {
         timer = "期限まで残り" + time;
       }
     } else {
-      timer = "まだ開始されていないタスク";
+      timer = `開始まで残り${time}`;
     }
     setTime({ timer: timer, proportion: proportion, dead: dead });
   };
@@ -70,7 +68,7 @@ const useTime = (due_str: string, start_str: string) => {
   return remaining;
 };
 
-export default function TodoCard({ todo }: { todo: Todo }) {
+export default function TodoCard({ todo, category }: { todo: Todo; category?: Category }) {
   const remaining = useTime(todo.due, todo.start);
   const priorityColors: Record<string, { bg: string; border: string }> = {
     Hi: { bg: "red.50", border: "red.500" }, // high
@@ -92,8 +90,11 @@ export default function TodoCard({ todo }: { todo: Todo }) {
               <MdEdit />
             </IconButton>
           </NextLink>
+          <Badge color={category?.color} variant="outline" size="lg">
+            {category?.name}
+          </Badge>
           {remaining !== null && (
-            <Text marginLeft="auto" color={remaining.dead ? "red" : "gray"} textDecorationLine={remaining.dead ? "underline" : "none"}>
+            <Text marginLeft="auto" color={remaining.proportion > 0 ? (remaining.dead ? "red" : "blue") : "gray"} textDecorationLine={remaining.dead ? "underline" : "none"}>
               {remaining?.timer}
             </Text>
           )}

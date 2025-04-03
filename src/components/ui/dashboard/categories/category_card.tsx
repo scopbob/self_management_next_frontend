@@ -6,14 +6,13 @@ import { Box, IconButton, Checkbox, Card, Heading, Progress, HStack, Input, Text
 import { BsPersonWalking } from "react-icons/bs";
 import { LuAlarmClock } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";
-import { useEffect, useState } from "react";
 import { Category } from "@/lib/definitions";
 
 export default function CategoryCard({ category }: { category: Category }) {
   return (
     <Card.Root w="full" px="6" py="3" size="sm" boxShadow="xl" borderRadius="lg" borderColor={category.color} borderWidth="2px">
       <Card.Header w="full" px="0" py="2">
-        <HStack w="full" justify="start">
+        <HStack w="full">
           <Link asChild>
             <NextLink href={`categories/${String(category.id)}`}>
               <Heading>{category.name}</Heading>
@@ -24,8 +23,7 @@ export default function CategoryCard({ category }: { category: Category }) {
               <MdEdit />
             </IconButton>
           </NextLink>
-          <Box w="full"></Box>
-          <ColorSwatch value={category.color} size="xl" />
+          <ColorSwatch marginLeft="auto" value={category.color} size="xl" />
         </HStack>
       </Card.Header>
       <VStack w="full"></VStack>

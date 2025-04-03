@@ -1,10 +1,10 @@
 import NextLink from "next/link";
-import { Todo } from "@/lib/definitions";
-import { Button, Heading, Text, VStack, HStack, Box, Progress, IconButton, For } from "@chakra-ui/react";
+import { Category, Todo } from "@/lib/definitions";
+import { Button, Heading, Text, VStack, HStack, Box, ColorSwatch, IconButton, For } from "@chakra-ui/react";
 import { FiChevronLeft, FiEdit, FiTrash } from "react-icons/fi";
 
 // Todo 詳細ページコンポーネント
-export default function TodoDetail({ todo }: { todo: Todo }) {
+export default function TodoDetail({ todo, category }: { todo: Todo; category?: Category }) {
   return (
     <VStack align="start" p={6} h="100vh" w="full">
       <IconButton size="xl" variant="ghost" asChild>
@@ -14,10 +14,17 @@ export default function TodoDetail({ todo }: { todo: Todo }) {
       </IconButton>
       <Heading size="3xl">Detail:</Heading>
       <VStack w="full" p={4} align="start" borderRadius="md" borderWidth="1px">
+        <Heading>{todo.title}</Heading>
         <HStack>
-          <Heading>{todo.title}</Heading>
-          <Text fontWeight="bold">{todo?.category?.name}</Text>
-          <Text color="fg.muted">Powers: {todo?.category?.color}</Text>
+          <Text>Category: </Text>
+          {category ? (
+            <HStack borderWidth="medium" p="1" borderRadius="md" borderColor={category.color}>
+              <Text fontWeight="bold">{category.name}</Text>
+              <ColorSwatch value={category.color} />
+            </HStack>
+          ) : (
+            "なし"
+          )}
         </HStack>
         <Text mt={2}>{todo.text}</Text>
         <HStack mt={4}>

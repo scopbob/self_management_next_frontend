@@ -43,30 +43,34 @@ export default function PromptForm() {
     <VStack m={4} p={4} spaceY={2} align="start" borderRadius="md" borderWidth="1px">
       <form onSubmit={onSubmit} style={{ width: "100%" }}>
         <Fieldset.Root invalid={!!errors}>
-          <VStack w="1/4" align="center">
-            {fields.map((field, index) => {
-              return (
-                <Field.Root key={field.id} invalid={!!errors?.texts?.[index]}>
-                  <HStack w="full" className={"section"} key={field.id}>
-                    <Input
-                      placeholder="request"
-                      {...register(`texts.${index}.text` as const, {
-                        required: true,
-                      })}
-                    />
-                    <IconButton colorPalette="red" onClick={() => remove(index)}>
-                      <MdDelete />
-                    </IconButton>
-                  </HStack>
-                  <Field.ErrorText>{errors.texts?.[index]?.text?.message}</Field.ErrorText>
-                </Field.Root>
-              );
-            })}
-            <IconButton size="sm" onClick={() => append({ text: "" })}>
-              <FaPlus />
-            </IconButton>
-          </VStack>
-          <Button type="submit" colorPalette="green">
+          <Fieldset.Legend>今日の予定を入力してください</Fieldset.Legend>
+          <Fieldset.HelperText color="red.500">※ プライベート情報、機密情報、または個人情報を送信しないでください。</Fieldset.HelperText>
+          <Fieldset.Content>
+            <VStack align="center">
+              {fields.map((field, index) => {
+                return (
+                  <Field.Root key={field.id} invalid={!!errors?.texts?.[index]}>
+                    <HStack w="full" key={field.id}>
+                      <Input
+                        placeholder="request"
+                        {...register(`texts.${index}.text` as const, {
+                          required: true,
+                        })}
+                      />
+                      <IconButton colorPalette="red" onClick={() => remove(index)}>
+                        <MdDelete />
+                      </IconButton>
+                    </HStack>
+                    <Field.ErrorText>{errors.texts?.[index]?.text?.message}</Field.ErrorText>
+                  </Field.Root>
+                );
+              })}
+              <IconButton size="sm" onClick={() => append({ text: "" })}>
+                <FaPlus />
+              </IconButton>
+            </VStack>
+          </Fieldset.Content>
+          <Button type="submit" alignSelf="center" maxWidth="30" size="lg" colorPalette="green">
             <RiAiGenerate />
             生成
           </Button>

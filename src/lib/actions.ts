@@ -111,6 +111,7 @@ export async function createTodo(todo: TodoSubmit, needsRedirect: boolean) {
       });
       return { errors: error_details };
     }
+    if (!needsRedirect) return data;
   } catch (error) {
     console.error(error);
   }
@@ -254,15 +255,19 @@ export async function fetchCategories() {
   }
 }
 
-export async function fetchFilteredCategories(search: string, currentPage: number, items_per_page: number) {
+export async function fetchFilteredCategories({ search, currentPage, items_per_page, ids }: { search?: string; currentPage?: number; items_per_page?: number; ids?: number[] }) {
   const session = await auth();
   const accessToken = session?.accessToken;
-  const offset = (currentPage - 1) * items_per_page;
-  const queryParams = new URLSearchParams({
-    search: search,
-    limit: String(items_per_page),
-    offset: String(offset),
-  });
+  let offset = undefined;
+  if (items_per_page && currentPage) {
+    offset = (currentPage - 1) * items_per_page;
+  }
+  const queryParams = new URLSearchParams();
+  search && queryParams.set("search", search);
+  items_per_page && queryParams.set("limit", String(items_per_page));
+  offset && queryParams.set("offset", String(offset));
+  ids && queryParams.set("ids", ids.map((id) => String(id)).join(","));
+
   try {
     const response = await fetch(process.env.API_URL + `/todo/category/?${queryParams}`, {
       method: "GET",

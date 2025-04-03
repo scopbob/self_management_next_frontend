@@ -5,7 +5,8 @@ import { Controller, useForm } from "react-hook-form";
 import { Category, Todo } from "@/lib/definitions";
 import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden, ColorSwatch } from "@chakra-ui/react";
 import { FiSave, FiCheck } from "react-icons/fi";
-import { createTodo } from "@/lib/actions";
+import { RxCross2 } from "react-icons/rx";
+import { createTodo, deleteTodo } from "@/lib/actions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TodoCreateSchema } from "@/lib/definitions";
@@ -22,13 +23,14 @@ const priority_choices = createListCollection({
   ],
 });
 
-export default function EditTodo({ todo, categories }: { todo: Todo; categories: Category[] }) {
+export default function GenerateTodo({ todo, categories }: { todo: Todo; categories: Category[] }) {
   const category_choices = createListCollection({
     items: [{ label: "カテゴリーなし", value: "0", color: "" }, ...categories.map((category) => ({ label: category.name, value: String(category.id), color: category.color }))],
   });
 
   type FormValues = z.infer<typeof TodoCreateSchema>;
-  const [disabled, idDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [createdId, setCreatedId] = useState<number>();
   const {
     register,
     handleSubmit,
@@ -39,151 +41,154 @@ export default function EditTodo({ todo, categories }: { todo: Todo; categories:
     disabled,
     defaultValues: { ...todo, start: convetDateToIso(new Date(todo.start)), due: convetDateToIso(new Date(todo.due)), priority: [todo.priority], category: todo.category === null ? ["0"] : [String(todo.category)] },
   });
-  const onSubmit = handleSubmit((data) => {
-    idDisabled(true);
-    createTodo({ ...data, due: new Date(data.due).toISOString(), start: new Date(data.start).toISOString(), priority: data.priority[0], category_id: Number(data.category[0]) }, false);
+  const onSubmit = handleSubmit(async (data) => {
+    if (!disabled) {
+      setDisabled(true);
+      const todo = await createTodo({ ...data, due: new Date(data.due).toISOString(), start: new Date(data.start).toISOString(), priority: data.priority[0] }, false);
+      setCreatedId(todo.id);
+    } else if (createdId) {
+      setDisabled(false);
+      deleteTodo(createdId);
+    }
   });
   return (
-    <VStack align="start" p={6} w="full">
-      <VStack w="full" p={4} spaceY={2} align="start" borderRadius="md" borderWidth="1px">
-        <form onSubmit={onSubmit} style={{ width: "100%" }}>
-          <Fieldset.Root invalid={!!errors}>
-            <Field.Root w="1/2" invalid={!!errors?.title}>
-              <Field.Label>Title</Field.Label>
-              <Input {...register("title")}></Input>
-              <Field.ErrorText>{errors.title?.message}</Field.ErrorText>
-            </Field.Root>
-            <Field.Root invalid={!!errors?.text}>
-              <Field.Label>Text</Field.Label>
-              <Textarea {...register("text")}></Textarea>
-              <Field.ErrorText>{errors.text?.message}</Field.ErrorText>
-            </Field.Root>
+    <VStack w="full" p={4} spaceY={2} align="start" borderRadius="md" borderWidth="1px">
+      <form onSubmit={onSubmit} style={{ width: "100%" }}>
+        <Fieldset.Root invalid={!!errors}>
+          <Field.Root w="1/2" invalid={!!errors?.title}>
+            <Field.Label>Title</Field.Label>
+            <Input {...register("title")}></Input>
+            <Field.ErrorText>{errors.title?.message}</Field.ErrorText>
+          </Field.Root>
+          <Field.Root invalid={!!errors?.text}>
+            <Field.Label>Text</Field.Label>
+            <Textarea {...register("text")}></Textarea>
+            <Field.ErrorText>{errors.text?.message}</Field.ErrorText>
+          </Field.Root>
 
-            <HStack mt={4} w={{ base: "full", md: "1/2", lg: "1/4" }}>
-              <Field.Root invalid={!!errors?.start}>
-                <Field.Label>開始</Field.Label>
-                <Input {...register("start")} type="datetime-local" />
-                <Field.ErrorText>{errors.start?.message}</Field.ErrorText>
-              </Field.Root>
-              <Field.Root invalid={!!errors?.due}>
-                <Field.Label>期限</Field.Label>
-                <Input {...register("due")} type="datetime-local" />
-                <Field.ErrorText>{errors.due?.message}</Field.ErrorText>
-              </Field.Root>
-            </HStack>
-            <Field.Root invalid={!!errors?.progress}>
-              <Field.Label>進捗</Field.Label>
-              <Controller
-                name="progress"
-                control={control}
-                render={({ field }) => (
-                  <NumberInput.Root
-                    disabled={field.disabled}
-                    name={field.name}
-                    value={String(field.value)}
-                    onValueChange={({ value }) => {
-                      field.onChange(Number(value));
-                    }}
-                    step={1}
-                    min={0}
-                    max={100}
-                  >
-                    <NumberInput.Control />
-                    <NumberInput.Input onBlur={field.onBlur} />
-                  </NumberInput.Root>
-                )}
-              />
-              <Field.ErrorText>{errors.progress?.message}</Field.ErrorText>
+          <HStack mt={4} w={{ base: "full", md: "1/2", lg: "1/4" }}>
+            <Field.Root invalid={!!errors?.start}>
+              <Field.Label>開始</Field.Label>
+              <Input {...register("start")} type="datetime-local" />
+              <Field.ErrorText>{errors.start?.message}</Field.ErrorText>
             </Field.Root>
-
-            <Field.Root w={{ base: "full", md: "1/2", lg: "1/4" }} invalid={!!errors?.category}>
-              <Field.Label>カテゴリー</Field.Label>
-              <Controller
-                control={control}
-                name="category"
-                render={({ field }) => (
-                  <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={category_choices} disabled={field.disabled}>
-                    <Select.HiddenSelect />
-                    <Select.Control>
-                      <Select.Trigger>
-                        <Select.ValueText placeholder="select category" />
-                      </Select.Trigger>
-                      <Select.IndicatorGroup>
-                        <Select.Indicator />
-                      </Select.IndicatorGroup>
-                    </Select.Control>
-                    <Portal>
-                      <Select.Positioner>
-                        <Select.Content>
-                          {category_choices.items.map((choice) => (
-                            <Select.Item item={choice} key={choice.value}>
-                              <HStack w="full">
-                                <Select.ItemText colorPalette="blue">{choice.label}</Select.ItemText>
-                                <Select.ItemIndicator />
-                                <ColorSwatch value={choice.color} alignSelf="end" />
-                              </HStack>
-                            </Select.Item>
-                          ))}
-                        </Select.Content>
-                      </Select.Positioner>
-                    </Portal>
-                  </Select.Root>
-                )}
-              />
-              <Field.ErrorText>{errors.priority?.message}</Field.ErrorText>
+            <Field.Root invalid={!!errors?.due}>
+              <Field.Label>期限</Field.Label>
+              <Input {...register("due")} type="datetime-local" />
+              <Field.ErrorText>{errors.due?.message}</Field.ErrorText>
             </Field.Root>
-
-            <Field.Root w={{ base: "full", md: "1/2", lg: "1/4" }} invalid={!!errors?.priority}>
-              <Field.Label>優先度</Field.Label>
-              <Controller
-                control={control}
-                name="priority"
-                render={({ field }) => (
-                  <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={priority_choices} disabled={field.disabled}>
-                    <Select.HiddenSelect />
-                    <Select.Control>
-                      <Select.Trigger>
-                        <Select.ValueText placeholder="select priority" />
-                      </Select.Trigger>
-                      <Select.IndicatorGroup>
-                        <Select.Indicator />
-                      </Select.IndicatorGroup>
-                    </Select.Control>
-                    <Portal>
-                      <Select.Positioner>
-                        <Select.Content>
-                          {priority_choices.items.map((priority_choice) => (
-                            <Select.Item item={priority_choice} key={priority_choice.value}>
-                              {priority_choice.label}
-                              <Select.ItemIndicator />
-                            </Select.Item>
-                          ))}
-                        </Select.Content>
-                      </Select.Positioner>
-                    </Portal>
-                  </Select.Root>
-                )}
-              />
-              <Field.ErrorText>{errors.priority?.message}</Field.ErrorText>
-            </Field.Root>
-
-            <Button type="submit" colorPalette="green" disabled={disabled}>
-              {disabled ? (
-                <>
-                  <FiCheck />
-                  保存済み
-                </>
-              ) : (
-                <>
-                  <FiSave />
-                  保存
-                </>
+          </HStack>
+          <Field.Root invalid={!!errors?.progress}>
+            <Field.Label>進捗</Field.Label>
+            <Controller
+              name="progress"
+              control={control}
+              render={({ field }) => (
+                <NumberInput.Root
+                  disabled={field.disabled}
+                  name={field.name}
+                  value={String(field.value)}
+                  onValueChange={({ value }) => {
+                    field.onChange(Number(value));
+                  }}
+                  step={1}
+                  min={0}
+                  max={100}
+                >
+                  <NumberInput.Control />
+                  <NumberInput.Input onBlur={field.onBlur} />
+                </NumberInput.Root>
               )}
+            />
+            <Field.ErrorText>{errors.progress?.message}</Field.ErrorText>
+          </Field.Root>
+
+          <Field.Root w={{ base: "full", md: "1/2", lg: "1/4" }} invalid={!!errors?.category}>
+            <Field.Label>カテゴリー</Field.Label>
+            <Controller
+              control={control}
+              name="category"
+              render={({ field }) => (
+                <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={category_choices} disabled={field.disabled}>
+                  <Select.HiddenSelect />
+                  <Select.Control>
+                    <Select.Trigger>
+                      <Select.ValueText placeholder="select category" />
+                    </Select.Trigger>
+                    <Select.IndicatorGroup>
+                      <Select.Indicator />
+                    </Select.IndicatorGroup>
+                  </Select.Control>
+                  <Portal>
+                    <Select.Positioner>
+                      <Select.Content>
+                        {category_choices.items.map((choice) => (
+                          <Select.Item item={choice} key={choice.value}>
+                            <HStack w="full">
+                              <Select.ItemText colorPalette="blue">{choice.label}</Select.ItemText>
+                              <Select.ItemIndicator />
+                              <ColorSwatch value={choice.color} alignSelf="end" />
+                            </HStack>
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Positioner>
+                  </Portal>
+                </Select.Root>
+              )}
+            />
+            <Field.ErrorText>{errors.priority?.message}</Field.ErrorText>
+          </Field.Root>
+
+          <Field.Root w={{ base: "full", md: "1/2", lg: "1/4" }} invalid={!!errors?.priority}>
+            <Field.Label>優先度</Field.Label>
+            <Controller
+              control={control}
+              name="priority"
+              render={({ field }) => (
+                <Select.Root name={field.name} value={field.value} onValueChange={({ value }) => field.onChange(value)} onInteractOutside={() => field.onBlur()} collection={priority_choices} disabled={field.disabled}>
+                  <Select.HiddenSelect />
+                  <Select.Control>
+                    <Select.Trigger>
+                      <Select.ValueText placeholder="select priority" />
+                    </Select.Trigger>
+                    <Select.IndicatorGroup>
+                      <Select.Indicator />
+                    </Select.IndicatorGroup>
+                  </Select.Control>
+                  <Portal>
+                    <Select.Positioner>
+                      <Select.Content>
+                        {priority_choices.items.map((priority_choice) => (
+                          <Select.Item item={priority_choice} key={priority_choice.value}>
+                            {priority_choice.label}
+                            <Select.ItemIndicator />
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Positioner>
+                  </Portal>
+                </Select.Root>
+              )}
+            />
+            <Field.ErrorText>{errors.priority?.message}</Field.ErrorText>
+          </Field.Root>
+
+          {disabled && createdId ? (
+            <Button type="submit" colorPalette="red">
+              <RxCross2 />
+              取り消し
             </Button>
-            <FieldsetErrorText>{errors.root?.message}</FieldsetErrorText>
-          </Fieldset.Root>
-        </form>
-      </VStack>
+          ) : (
+            <Button type="submit" colorPalette="green">
+              <FiSave />
+              保存
+            </Button>
+          )}
+
+          <FieldsetErrorText>{errors.root?.message}</FieldsetErrorText>
+        </Fieldset.Root>
+      </form>
     </VStack>
   );
 }
