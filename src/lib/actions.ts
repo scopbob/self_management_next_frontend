@@ -33,7 +33,7 @@ export async function fetchTodosCount(search: string) {
   } catch (error) {}
 }
 
-export async function fetchFilteredTodos(search: string, currentPage: number, items_per_page: number, order: string, reverse: boolean) {
+export async function fetchFilteredTodos(search: string, currentPage: number, items_per_page: number, order: string, reverse: boolean, categoryFilter?: number) {
   const session = await auth();
   const accessToken = session?.accessToken;
   const offset = (currentPage - 1) * items_per_page;
@@ -44,6 +44,7 @@ export async function fetchFilteredTodos(search: string, currentPage: number, it
     order: order,
     reverse: String(reverse),
   });
+  categoryFilter && queryParams.set("category", String(categoryFilter));
   try {
     const response = await fetch(process.env.API_URL + `/todo/?${queryParams}`, {
       method: "GET",
@@ -92,6 +93,10 @@ export async function fetchTodo(id: number) {
 
 export async function createTodo(todo: TodoSubmit, needsRedirect: boolean) {
   const session = await auth();
+  if (session?.isGuest === true) {
+    await redirect("/dashboard/todos");
+    return { message: "You must be logged in to perform this action." };
+  }
   const accessToken = session?.accessToken;
 
   try {
@@ -120,6 +125,10 @@ export async function createTodo(todo: TodoSubmit, needsRedirect: boolean) {
 
 export async function editTodo(todo: TodoSubmit) {
   const session = await auth();
+  if (session?.isGuest === true) {
+    await redirect("/dashboard/todos");
+    return { message: "You must be logged in to perform this action." };
+  }
   const accessToken = session?.accessToken;
 
   try {
@@ -149,6 +158,7 @@ export async function editTodo(todo: TodoSubmit) {
 
 export async function deleteTodo(id: number) {
   const session = await auth();
+  if (session?.isGuest === true) return { message: "You must be logged in to perform this action." };
   const accessToken = session?.accessToken;
   try {
     const response = await fetch(process.env.API_URL + `/todo/${id}`, {
@@ -298,6 +308,10 @@ export async function fetchFilteredCategories({ search, currentPage, items_per_p
 
 export async function createCategory(category: Category) {
   const session = await auth();
+  if (session?.isGuest === true) {
+    await redirect("/dashboard/categories");
+    return { message: "You must be logged in to perform this action." };
+  }
   const accessToken = session?.accessToken;
   try {
     const response = await fetch(process.env.API_URL + `/todo/category/create`, {
@@ -324,6 +338,10 @@ export async function createCategory(category: Category) {
 
 export async function editCategory(category: Category) {
   const session = await auth();
+  if (session?.isGuest === true) {
+    await redirect("/dashboard/categories");
+    return { message: "You must be logged in to perform this action." };
+  }
   const accessToken = session?.accessToken;
   try {
     const response = await fetch(process.env.API_URL + `/todo/category/${category.id}`, {
@@ -350,6 +368,7 @@ export async function editCategory(category: Category) {
 
 export async function deleteCategory(id: number) {
   const session = await auth();
+  if (session?.isGuest === true) return { message: "You must be logged in to perform this action." };
   const accessToken = session?.accessToken;
   try {
     const response = await fetch(process.env.API_URL + `/todo/category/${id}`, {
@@ -429,6 +448,25 @@ export async function handleLogout() {
 export async function authenticate(prevState: string | undefined, formData: FormData) {
   try {
     await signIn("credentials", formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return "Invalid credentials.";
+        default:
+          return "Something went wrong.";
+      }
+    }
+    throw error;
+  }
+}
+
+export async function guestLogin() {
+  try {
+    await signIn("credentials", {
+      email: process.env.GUEST_EMAIL,
+      password: process.env.GUEST_PASSWORD,
+    });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {

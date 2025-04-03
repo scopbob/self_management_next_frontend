@@ -16,10 +16,14 @@ export default async function Page(props: {
   searchParams?: Promise<{
     search?: string;
     page?: string;
+    category?: number;
+    reverse: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const search = searchParams?.search || "";
+  const category = searchParams?.category;
+  const reverse = searchParams?.reverse === "true" || false;
   const currentPage = Number(searchParams?.page) || 1;
   const ITEMS_PER_PAGE = 5;
   const count = (await fetchTodosCount(search)) || 1;
@@ -35,7 +39,7 @@ export default async function Page(props: {
           <NextLink href="todos/create">Create</NextLink>
         </Button>
       </HStack>
-      <TodosTable search={search} currentPage={currentPage} items_per_page={ITEMS_PER_PAGE} />
+      <TodosTable search={search} currentPage={currentPage} items_per_page={ITEMS_PER_PAGE} category={category} reverse={reverse} />
       <Box flexGrow="1" display={{ base: "none", md: "block" }} />
       <VStack py="2" w="full">
         <Pagination count={count} pageSize={ITEMS_PER_PAGE} />

@@ -10,6 +10,7 @@ declare module "next-auth" {
     user?: User;
     accessToken?: string;
     refreshToken?: string;
+    isGuest: boolean;
     error?: "RefreshTokenError";
   }
 }

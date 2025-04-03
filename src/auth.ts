@@ -90,6 +90,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.accessToken = token.access_token as string;
       session.refreshToken = token.refresh_token as string;
       session.error = token.error as "RefreshTokenError";
+      if (token.email === "guest@example.com") session.isGuest = true;
+      else session.isGuest = false;
       return session;
     },
   },

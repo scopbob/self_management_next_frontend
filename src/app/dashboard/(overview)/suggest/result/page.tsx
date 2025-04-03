@@ -6,6 +6,7 @@ import { For, Heading, Box, Center, Text, Link } from "@chakra-ui/react";
 import TodoGenerateForm from "@/components/ui/dashboard/todos/generate_form";
 import { generateTodayTodo } from "@/lib/generative_ai";
 import { lusitana, orbitron } from "@/components/ui/fonts";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -18,6 +19,7 @@ export default async function Page(props: {
 }) {
   const searchParams = await props.searchParams;
   const [todos, categories] = await Promise.all([generateTodayTodo(searchParams?.text), fetchCategories()]);
+  const session = await auth();
 
   return (
     <Box>
@@ -37,13 +39,17 @@ export default async function Page(props: {
         )}
       </For>
       <Center>
-        <Heading size="xl" px="3" py="5">
-          保存したTodoを
-          <Link colorPalette="teal" asChild>
-            <NextLink href="/dashboard/todos">確認</NextLink>
-          </Link>
-          する
-        </Heading>
+        {session?.isGuest ? (
+          <Text>※ ログインすると、実際に作成することができます</Text>
+        ) : (
+          <Heading size="xl" px="3" py="5">
+            保存したTodoを
+            <Link colorPalette="teal" asChild>
+              <NextLink href="/dashboard/todos">確認</NextLink>
+            </Link>
+            する
+          </Heading>
+        )}
       </Center>
     </Box>
   );

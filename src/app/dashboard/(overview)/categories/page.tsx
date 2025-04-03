@@ -31,7 +31,7 @@ export default async function Page(props: {
         Category
       </Heading>
       <HStack px="2" pb="2" spaceX="1" w="full">
-        <Search placeholder="Search todos..." />
+        <Search placeholder="Search categories..." />
         <Button colorPalette="blue" variant="solid" size="lg" asChild>
           <NextLink href="categories/create">Create</NextLink>
         </Button>

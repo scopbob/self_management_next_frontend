@@ -2,12 +2,51 @@
 
 import NextLink from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Button, IconButton, Checkbox, Card, Heading, Progress, HStack, Input, Text, VStack, Field, Fieldset, Link, Badge } from "@chakra-ui/react";
+import { Button, IconButton, Checkbox, Card, Heading, Progress, HStack, Input, Text, VStack, Field, Fieldset, Link, Box } from "@chakra-ui/react";
 import { BsPersonWalking } from "react-icons/bs";
 import { LuAlarmClock } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { Category, Todo } from "@/lib/definitions";
+
+function getLuminance(color: string): number {
+  let rgb;
+  // hex 形式か rgba 形式かを確認
+  if (color.startsWith("#")) {
+    rgb = hexToRgb(color);
+  } else if (color.startsWith("rgba")) {
+    rgb = rgbaToRgb(color);
+  } else {
+    return 0; // 対応していない色の場合
+  }
+
+  // RGBからリニアRGBを計算して、明るさを求める
+  const { r, g, b } = rgb;
+  const a = [r, g, b].map((x) => {
+    x /= 255;
+    return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+  });
+
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const result = /^#([0-9a-f]{6}|[0-9a-f]{3})$/i.exec(hex);
+  if (!result) return { r: 0, g: 0, b: 0 };
+  let r = parseInt(result[1].substr(0, 2), 16);
+  let g = parseInt(result[1].substr(2, 2), 16);
+  let b = parseInt(result[1].substr(4, 2), 16);
+  return { r, g, b };
+}
+
+function rgbaToRgb(rgba: string): { r: number; g: number; b: number } {
+  const result = /rgba?\((\d+), (\d+), (\d+)(?:, ([\d\.]+))?\)/.exec(rgba);
+  if (!result) return { r: 0, g: 0, b: 0 };
+  const r = parseInt(result[1], 10);
+  const g = parseInt(result[2], 10);
+  const b = parseInt(result[3], 10);
+  return { r, g, b };
+}
 
 function calcRemainingTime(due_str: string) {
   const due = new Date(due_str);
@@ -90,9 +129,11 @@ export default function TodoCard({ todo, category }: { todo: Todo; category?: Ca
               <MdEdit />
             </IconButton>
           </NextLink>
-          <Badge color={category?.color} variant="outline" size="lg">
-            {category?.name}
-          </Badge>
+          {category && (
+            <Box bgColor={category?.color} color={getLuminance(category?.color) > 0.5 ? "black" : "white"} fontWeight="700" borderRadius="md" p="0.5">
+              {category?.name}
+            </Box>
+          )}
           {remaining !== null && (
             <Text marginLeft="auto" color={remaining.proportion > 0 ? (remaining.dead ? "red" : "blue") : "gray"} textDecorationLine={remaining.dead ? "underline" : "none"}>
               {remaining?.timer}
