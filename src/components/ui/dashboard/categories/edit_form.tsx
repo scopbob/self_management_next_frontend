@@ -2,7 +2,7 @@
 
 import { Controller, useForm } from "react-hook-form";
 import { Category } from "@/lib/definitions";
-import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden, ColorPicker, parseColor } from "@chakra-ui/react";
+import { Button, VStack, HStack, Input, Field, Fieldset, Portal, FieldsetErrorText, ColorPicker, parseColor } from "@chakra-ui/react";
 import { FiSave } from "react-icons/fi";
 import { editCategory } from "@/lib/actions";
 import { z } from "zod";

@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Metadata } from "next";
 import { fetchCategories, fetchTodo } from "@/lib/actions";
 import { Box, Text } from "@chakra-ui/react";

@@ -1,4 +1,4 @@
-import { VStack, For, Box, Table, Heading } from "@chakra-ui/react";
+import { Box, Table, Heading } from "@chakra-ui/react";
 import { Todo } from "@/lib/definitions";
 import { fetchFilteredTodos } from "@/lib/actions";
 
@@ -11,7 +11,7 @@ export default async function LatestTodos({ number }: { number: number }) {
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader>Todo</Table.ColumnHeader>
-            <Table.ColumnHeader>Category</Table.ColumnHeader>
+            <Table.ColumnHeader>Progress</Table.ColumnHeader>
             <Table.ColumnHeader textAlign="end">Due</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
@@ -19,7 +19,7 @@ export default async function LatestTodos({ number }: { number: number }) {
           {todos.map((todo: Todo) => (
             <Table.Row key={todo.id}>
               <Table.Cell>{todo.title}</Table.Cell>
-              <Table.Cell>{todo.category?.name}</Table.Cell>
+              <Table.Cell>{todo.progress}</Table.Cell>
               <Table.Cell textAlign="end">{new Date(todo.due).toLocaleString()}</Table.Cell>
             </Table.Row>
           ))}

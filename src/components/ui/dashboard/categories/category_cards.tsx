@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useController, useForm } from "react-hook-form";
 import { z } from "zod";
 import { deleteCategories } from "@/lib/actions";
-import { FormState } from "@/lib/definitions";
+
 import CategoryCard from "./category_card";
 
 const formSchema = z.object({

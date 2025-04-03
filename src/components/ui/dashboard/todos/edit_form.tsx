@@ -2,7 +2,7 @@
 
 import { Controller, useForm } from "react-hook-form";
 import { Category, Todo } from "@/lib/definitions";
-import { Button, Heading, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, VisuallyHidden, ColorSwatch } from "@chakra-ui/react";
+import { Button, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, ColorSwatch } from "@chakra-ui/react";
 import { FiSave } from "react-icons/fi";
 import { editTodo } from "@/lib/actions";
 import { z } from "zod";

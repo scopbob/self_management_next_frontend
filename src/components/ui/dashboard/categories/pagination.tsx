@@ -1,7 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ButtonGroup, IconButton, type IconButtonProps, Pagination as ChakraPagination, usePaginationContext } from "@chakra-ui/react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 

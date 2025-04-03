@@ -1,5 +1,3 @@
-import { VStack, For } from "@chakra-ui/react";
-import { Category } from "@/lib/definitions";
 import { fetchFilteredCategories } from "@/lib/actions";
 import CategoryCards from "./category_cards";
 

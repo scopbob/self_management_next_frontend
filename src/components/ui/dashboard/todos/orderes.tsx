@@ -1,8 +1,8 @@
 "use client";
 
 import NextLink from "next/link";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { Menu, Button, Portal, HStack, Text, ColorSwatch, IconButton } from "@chakra-ui/react";
+import { useSearchParams, usePathname } from "next/navigation";
+import { IconButton } from "@chakra-ui/react";
 import { LuArrowUpDown } from "react-icons/lu";
 
 export default function Order({ reverse }: { reverse: boolean }) {

@@ -1,6 +1,6 @@
 import NextLink from "next/link";
 import { Category } from "@/lib/definitions";
-import { Button, Heading, Text, VStack, HStack, Box, Progress, IconButton, For } from "@chakra-ui/react";
+import { Button, Heading, VStack, HStack, IconButton } from "@chakra-ui/react";
 import { FiChevronLeft, FiEdit, FiTrash } from "react-icons/fi";
 
 // Todo 詳細ページコンポーネント

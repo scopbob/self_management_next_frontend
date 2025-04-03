@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import SuggestTodayTodo from "@/components/ui/dashboard/ai_sdk/today_plan";
+
 import { Box, Heading } from "@chakra-ui/react";
 import { lusitana } from "@/components/ui/fonts";
 import PromptForm from "@/components/ui/dashboard/ai_sdk/suggest_form";

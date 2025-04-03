@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import NextLink from "next/link";
 import { Metadata } from "next";
 import { fetchCategories } from "@/lib/actions";

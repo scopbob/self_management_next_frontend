@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Metadata } from "next";
 import { fetchTodo, fetchCategory } from "@/lib/actions";
 import TodoDetail from "@/components/ui/dashboard/todos/detail";

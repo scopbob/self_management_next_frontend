@@ -1,4 +1,3 @@
-import { VStack, For } from "@chakra-ui/react";
 import { Todo } from "@/lib/definitions";
 import { fetchFilteredCategories, fetchFilteredTodos } from "@/lib/actions";
 import TodoCards from "./todo_cards";

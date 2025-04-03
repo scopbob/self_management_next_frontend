@@ -1,7 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
-import { HStack, Button } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { FiHome } from "react-icons/fi";
 import { BiCategory } from "react-icons/bi";
 import { GrTask } from "react-icons/gr";

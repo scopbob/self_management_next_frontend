@@ -1,8 +1,7 @@
-import TodosTable from "@/components/ui/dashboard/todos/table";
 import Pagination from "@/components/ui/dashboard/todos/pagination";
-import { Suspense } from "react";
+
 import { Metadata } from "next";
-import { Button, Heading, HStack, VStack, ButtonGroup, IconButton, Box } from "@chakra-ui/react";
+import { Button, Heading, HStack, VStack, Box } from "@chakra-ui/react";
 import NextLink from "next/link";
 import Search from "@/components/ui/dashboard/todos/search";
 import { lusitana } from "@/components/ui/fonts";

@@ -1,8 +1,8 @@
 "use client";
 
 import NextLink from "next/link";
-import { PasswordInput } from "@/components/ui/password-input";
-import { Button, IconButton, Checkbox, Card, Heading, Progress, HStack, Input, Text, VStack, Field, Fieldset, Link, Box } from "@chakra-ui/react";
+
+import { IconButton, Card, Heading, Progress, HStack, Text, VStack, Link, Box } from "@chakra-ui/react";
 import { BsPersonWalking } from "react-icons/bs";
 import { LuAlarmClock } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";

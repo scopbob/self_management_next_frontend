@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { Button, IconButton, VStack, Field, Fieldset, Input, HStack } from "@chakra-ui/react";
 import { RiAiGenerate } from "react-icons/ri";
 import { MdDelete } from "react-icons/md";

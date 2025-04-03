@@ -1,7 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import { Menu, Button, Portal, HStack, Text, ColorSwatch } from "@chakra-ui/react";
 import { FaCaretDown } from "react-icons/fa";
 import { Category } from "@/lib/definitions";
