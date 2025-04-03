@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Container, Heading, Text, VStack, HStack } from "@chakra-ui/react";
+import { Button, Heading, Text, VStack, HStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { FiLogIn } from "react-icons/fi";
 import { FaUser, FaUserPlus } from "react-icons/fa";

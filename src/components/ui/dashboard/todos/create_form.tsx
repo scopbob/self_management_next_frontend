@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Category } from "@/lib/definitions";
 import { Button, VStack, HStack, Input, Field, Fieldset, Select, Textarea, NumberInput, Portal, createListCollection, FieldsetErrorText, ColorSwatch } from "@chakra-ui/react";
 import { FiSave } from "react-icons/fi";
-import { createTodo, fetchCategories } from "@/lib/actions";
+import { createTodo } from "@/lib/actions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TodoCreateSchema } from "@/lib/definitions";

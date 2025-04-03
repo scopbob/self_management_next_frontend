@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { signIn, signOut, auth } from "@/auth";
 import { AuthError } from "next-auth";
-import { SignupFormSchema, FormState, ApiErrorDetail, Todo, TodoFormSchema, TodoSubmit, Category } from "@/lib/definitions";
+import { SignupFormSchema, FormState, ApiErrorDetail, TodoSubmit, Category } from "@/lib/definitions";
 import { getIsTokenValid } from "./auth-helpers";
 import { revalidatePath } from "next/cache";
 
@@ -23,14 +23,16 @@ export async function fetchTodosCount(search: string) {
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
       throw Error;
     }
     return Number(data);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function fetchFilteredTodos(search: string, currentPage: number, items_per_page: number, order: string, reverse: boolean, categoryFilter?: number) {
@@ -44,7 +46,7 @@ export async function fetchFilteredTodos(search: string, currentPage: number, it
     order: order,
     reverse: String(reverse),
   });
-  categoryFilter && queryParams.set("category", String(categoryFilter));
+  if (categoryFilter) queryParams.set("category", String(categoryFilter));
   try {
     const response = await fetch(process.env.API_URL + `/todo/?${queryParams}`, {
       method: "GET",
@@ -55,7 +57,7 @@ export async function fetchFilteredTodos(search: string, currentPage: number, it
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
@@ -81,14 +83,16 @@ export async function fetchTodo(id: number) {
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
         console.log(data);
       });
     }
     return data;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function createTodo(todo: TodoSubmit, needsRedirect: boolean) {
@@ -110,7 +114,7 @@ export async function createTodo(todo: TodoSubmit, needsRedirect: boolean) {
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
@@ -143,7 +147,7 @@ export async function editTodo(todo: TodoSubmit) {
 
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
@@ -170,14 +174,16 @@ export async function deleteTodo(id: number) {
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
         console.log(data);
       });
     }
     return data;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function deleteTodos(ids: number[]) {
@@ -185,7 +191,9 @@ export async function deleteTodos(ids: number[]) {
     const datas = await Promise.all(ids.map((id) => deleteTodo(id)));
     revalidatePath("/dashboard/todos");
     return datas;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function fetchCategoriesCount() {
@@ -201,14 +209,16 @@ export async function fetchCategoriesCount() {
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
       throw Error;
     }
     return Number(data);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function fetchCategory(id: number) {
@@ -224,14 +234,16 @@ export async function fetchCategory(id: number) {
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
         console.log(data);
       });
     }
     return data;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function fetchCategories() {
@@ -252,7 +264,7 @@ export async function fetchCategories() {
     }
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
@@ -273,10 +285,10 @@ export async function fetchFilteredCategories({ search, currentPage, items_per_p
     offset = (currentPage - 1) * items_per_page;
   }
   const queryParams = new URLSearchParams();
-  search && queryParams.set("search", search);
-  items_per_page && queryParams.set("limit", String(items_per_page));
-  offset && queryParams.set("offset", String(offset));
-  ids && queryParams.set("ids", ids.map((id) => String(id)).join(","));
+  if (search) queryParams.set("search", search);
+  if (items_per_page) queryParams.set("limit", String(items_per_page));
+  if (offset) queryParams.set("offset", String(offset));
+  if (ids) queryParams.set("ids", ids.map((id) => String(id)).join(","));
 
   try {
     const response = await fetch(process.env.API_URL + `/todo/category/?${queryParams}`, {
@@ -293,7 +305,7 @@ export async function fetchFilteredCategories({ search, currentPage, items_per_p
     }
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
@@ -324,7 +336,7 @@ export async function createCategory(category: Category) {
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
@@ -354,7 +366,7 @@ export async function editCategory(category: Category) {
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
@@ -380,14 +392,16 @@ export async function deleteCategory(id: number) {
     });
     const data = await response.json();
     if (!response.ok) {
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
         console.log(data);
       });
     }
     return data;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function deleteCategories(ids: number[]) {
@@ -395,7 +409,9 @@ export async function deleteCategories(ids: number[]) {
     const datas = await Promise.all(ids.map((id) => deleteCategory(id)));
     revalidatePath("/dashboard/categories");
     return datas;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function createAccount(State: FormState, formData: FormData) {
@@ -423,13 +439,15 @@ export async function createAccount(State: FormState, formData: FormData) {
     });
     if (!response.ok) {
       const data = await response.json();
-      let error_details: { [key: string]: string[] } = {};
+      const error_details: { [key: string]: string[] } = {};
       data.detail.map(function (detail: ApiErrorDetail) {
         error_details[detail.loc[2]] = detail.msg;
       });
       return { errors: error_details };
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
   redirect("/signup/complete");
 }
 

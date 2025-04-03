@@ -33,9 +33,9 @@ function getLuminance(color: string): number {
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
   const result = /^#([0-9a-f]{6}|[0-9a-f]{3})$/i.exec(hex);
   if (!result) return { r: 0, g: 0, b: 0 };
-  let r = parseInt(result[1].substr(0, 2), 16);
-  let g = parseInt(result[1].substr(2, 2), 16);
-  let b = parseInt(result[1].substr(4, 2), 16);
+  const r = parseInt(result[1].substr(0, 2), 16);
+  const g = parseInt(result[1].substr(2, 2), 16);
+  const b = parseInt(result[1].substr(4, 2), 16);
   return { r, g, b };
 }
 
@@ -51,7 +51,7 @@ function rgbaToRgb(rgba: string): { r: number; g: number; b: number } {
 function calcRemainingTime(due_str: string) {
   const due = new Date(due_str);
   const now = new Date();
-  var dead = false;
+  let dead = false;
   if (due.getTime() < now.getTime()) {
     dead = true;
   }
@@ -103,7 +103,7 @@ const useTime = (due_str: string, start_str: string) => {
       getRemainingTime(due_str, start_str);
     }, 1000 * 60);
     return () => clearInterval(intervalId);
-  }, []);
+  });
   return remaining;
 };
 

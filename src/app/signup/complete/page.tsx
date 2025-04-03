@@ -1,5 +1,3 @@
-import SignuUpForm from "@/components/ui/auth/signup-form";
-import { Suspense } from "react";
 import { Metadata } from "next";
 import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
 

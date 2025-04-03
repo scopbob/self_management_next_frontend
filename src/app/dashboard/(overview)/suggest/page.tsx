@@ -12,7 +12,7 @@ export default async function Page() {
   return (
     <Box>
       <Heading size="4xl" className={lusitana.className} px="3" pt="5">
-        Generate today's Plan
+        Generate today&apos;s Plan
       </Heading>
       <PromptForm />
     </Box>

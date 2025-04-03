@@ -1,5 +1,4 @@
 import type { NextAuthConfig } from "next-auth";
-import { getIsTokenValid } from "./lib/auth-helpers";
 
 export const authConfig = {
   pages: {
@@ -21,7 +20,7 @@ export const authConfig = {
       }
       return true;
     },
-    jwt({ token, trigger, session, account }) {
+    jwt({ token, account }) {
       if (account?.provider === "Credentials") {
         return { ...token, accessToken: account.access_token };
       }

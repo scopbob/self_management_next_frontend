@@ -12,7 +12,7 @@ import { useSearchParams } from "next/navigation";
 export default function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-  const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
+  const [errorMessage, formAction] = useActionState(authenticate, undefined);
   return (
     <VStack minH="100vh" justify="center">
       <Card.Root w="sm" p={6} boxShadow="xl" borderRadius="lg">

@@ -4,7 +4,6 @@ import { authConfig } from "./auth.config";
 import Credentials from "next-auth/providers/credentials";
 import { SigninFormSchema } from "@/lib/definitions";
 import { getIsTokenValid } from "./lib/auth-helpers";
-import { handleLogout } from "./lib/actions";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,

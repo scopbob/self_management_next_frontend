@@ -4,7 +4,6 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { TodoGenerateSchema } from "./definitions";
 import { Todo } from "./definitions";
-import { fetchCategories } from "./actions";
 
 const google = createGoogleGenerativeAI({
   // custom settings

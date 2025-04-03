@@ -3,6 +3,7 @@ export const parseJwt = (token: string) => {
     // atob: decodes base64 strings
     return JSON.parse(atob(token.split(".")[1]));
   } catch (e) {
+    console.log(e);
     return null;
   }
 };
