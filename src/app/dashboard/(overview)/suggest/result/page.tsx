@@ -1,11 +1,10 @@
 import NextLink from "next/link";
 import { Metadata } from "next";
 import { fetchCategories } from "@/lib/actions";
-import { For, Heading, Box, Center, Text, Link, VStack } from "@chakra-ui/react";
-import { Category, Todo } from "@/lib/definitions";
+import { Heading, Box, Center, Text, Link } from "@chakra-ui/react";
+import { Category } from "@/lib/definitions";
 import TodoGenerateForms from "@/components/ui/dashboard/todos/generate_forms";
-import { generateTodayTodo } from "@/lib/generative_ai";
-import { lusitana, orbitron } from "@/components/ui/fonts";
+import { lusitana } from "@/components/ui/fonts";
 import { auth } from "@/auth";
 
 export const metadata: Metadata = {
