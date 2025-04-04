@@ -1,13 +1,11 @@
 import { Metadata } from "next";
 import NextLink from "next/link";
-import { Suspense } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { VStack, Heading, Button } from "@chakra-ui/react";
 import { lusitana } from "@/components/ui/fonts";
 import LatestTodos from "@/components/ui/dashboard/upcoming-todos";
 import { FaRocket } from "react-icons/fa6";
-import UpcomingTodosSkelton from "@/components/ui/dashboard/skeltons/upcoming-todos-skelton";
 
 export const metadata: Metadata = {
   title: "Dashboard",
