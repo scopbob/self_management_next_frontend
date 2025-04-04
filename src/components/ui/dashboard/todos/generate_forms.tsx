@@ -20,7 +20,7 @@ export default function GenerateTodoForms({ text, categories }: { text: string; 
       const fetchedTodos = await generateTodayTodo(text);
       setTodos(fetchedTodos);
     })();
-  }, []);
+  }, [text]);
 
   if (!todos) {
     return (
