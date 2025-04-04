@@ -99,7 +99,7 @@ export async function createTodo(todo: TodoSubmit, needsRedirect: boolean) {
   const session = await auth();
   if (session?.isGuest === true) {
     if (needsRedirect) await redirect("/dashboard/todos");
-    return { message: "You must be logged in to perform this action." };
+    return { id: -1, message: "You must be logged in to perform this action." };
   }
   const accessToken = session?.accessToken;
 

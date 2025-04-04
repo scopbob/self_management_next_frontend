@@ -11,7 +11,6 @@ const google = createGoogleGenerativeAI({
 const model = google("gemini-2.0-flash-001");
 
 export async function generateTodayTodo(userPrompt?: string) {
-  console.log(new Date(), new Date().toLocaleString(), new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }));
   const { object } = await generateObject({
     model: model,
     output: "array",
