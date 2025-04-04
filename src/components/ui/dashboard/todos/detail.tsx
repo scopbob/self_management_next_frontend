@@ -28,10 +28,10 @@ export default function TodoDetail({ todo, category }: { todo: Todo; category?: 
         </HStack>
         <Text mt={2}>{todo.text}</Text>
         <HStack mt={4}>
-          <Text>開始: {new Date(todo.start).toLocaleString("ja-JP").slice(0, -3)}</Text>
+          <Text>開始: {new Date(todo.start).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }).slice(0, -3)}</Text>
         </HStack>
         <HStack mt={2}>
-          <Text>期限: {new Date(todo.due).toLocaleString("ja-JP").slice(0, -3)}</Text>
+          <Text>期限: {new Date(todo.due).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }).slice(0, -3)}</Text>
         </HStack>
         <HStack mt={4} w="full" spaceX="4">
           <Text fontSize="xl">進捗: {todo.progress} /100</Text>
