@@ -103,7 +103,7 @@ const useTime = (due_str: string, start_str: string) => {
       getRemainingTime(due_str, start_str);
     }, 1000 * 60);
     return () => clearInterval(intervalId);
-  });
+  }, []);
   return remaining;
 };
 

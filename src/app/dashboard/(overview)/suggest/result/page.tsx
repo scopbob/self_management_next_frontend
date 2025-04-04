@@ -1,8 +1,9 @@
 import NextLink from "next/link";
 import { Metadata } from "next";
 import { fetchCategories } from "@/lib/actions";
-import { For, Heading, Box, Center, Text, Link } from "@chakra-ui/react";
-import TodoGenerateForm from "@/components/ui/dashboard/todos/generate_form";
+import { For, Heading, Box, Center, Text, Link, VStack } from "@chakra-ui/react";
+import { Category, Todo } from "@/lib/definitions";
+import TodoGenerateForms from "@/components/ui/dashboard/todos/generate_forms";
 import { generateTodayTodo } from "@/lib/generative_ai";
 import { lusitana, orbitron } from "@/components/ui/fonts";
 import { auth } from "@/auth";
@@ -17,7 +18,8 @@ export default async function Page(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const [todos, categories] = await Promise.all([generateTodayTodo(searchParams?.text), fetchCategories()]);
+  const text = searchParams?.text || "";
+  const categories: Category[] = await fetchCategories();
   const session = await auth();
 
   return (
@@ -25,18 +27,8 @@ export default async function Page(props: {
       <Heading size="4xl" className={lusitana.className} px="3" pt="5">
         Results
       </Heading>
-      <For each={todos}>
-        {(todo, i) => (
-          <Box key={i} p="2">
-            <Center width="10" mb="1" borderWidth="medium" borderColor="black" borderRadius="md">
-              <Heading size="2xl" className={orbitron.className}>
-                {i + 1}
-              </Heading>
-            </Center>
-            <TodoGenerateForm key={i} todo={todo} categories={categories} />
-          </Box>
-        )}
-      </For>
+      <TodoGenerateForms text={text} categories={categories} />
+
       <Center>
         {session?.isGuest ? (
           <Text>※ ログインすると、実際に作成することができます</Text>
