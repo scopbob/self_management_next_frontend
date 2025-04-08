@@ -497,3 +497,19 @@ export async function guestLogin() {
     throw error;
   }
 }
+
+export async function githubLogin() {
+  try {
+    await signIn("github");
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "OAuthCallbackError":
+          return "OAuth callback error.";
+        default:
+          return "Something went wrong.";
+      }
+    }
+    throw error;
+  }
+}

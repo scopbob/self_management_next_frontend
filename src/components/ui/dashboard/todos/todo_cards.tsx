@@ -26,6 +26,7 @@ export default function TodosCards({ todos, categories, reverse }: { todos: Todo
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    reValidateMode: "onSubmit",
   });
 
   const id = useController({
@@ -36,9 +37,8 @@ export default function TodosCards({ todos, categories, reverse }: { todos: Todo
   const invalid = !!errors.id;
 
   const categories_ids = categories.map((category) => category.id);
-
   return (
-    <VStack alignItems="stretch" w="full">
+    <VStack alignItems="stretch" w="full" suppressHydrationWarning>
       <form onSubmit={handleSubmit((data) => deleteTodos(data.id.map((x) => Number(x))))}>
         <Fieldset.Root invalid={invalid}>
           <HStack>

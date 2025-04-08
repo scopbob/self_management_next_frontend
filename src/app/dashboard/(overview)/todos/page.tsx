@@ -1,4 +1,4 @@
-import TodosTable from "@/components/ui/dashboard/todos/table";
+import TodoListView from "@/components/ui/dashboard/todos/table";
 import Pagination from "@/components/ui/dashboard/todos/pagination";
 import { Metadata } from "next";
 import { Button, Heading, HStack, VStack, Box } from "@chakra-ui/react";
@@ -38,7 +38,9 @@ export default async function Page(props: {
           <NextLink href="todos/create">Create</NextLink>
         </Button>
       </HStack>
-      <TodosTable search={search} currentPage={currentPage} items_per_page={ITEMS_PER_PAGE} category={category} reverse={reverse} />
+
+      <TodoListView search={search} currentPage={currentPage} items_per_page={ITEMS_PER_PAGE} category={category} reverse={reverse} />
+
       <Box flexGrow="1" display={{ base: "none", md: "block" }} />
       <VStack py="2" w="full">
         <Pagination count={count} pageSize={ITEMS_PER_PAGE} />

@@ -1,4 +1,5 @@
 import NextAuth, { CredentialsSignin } from "next-auth";
+import GitHub from "next-auth/providers/github";
 import { ZodError } from "zod";
 import { authConfig } from "./auth.config";
 import Credentials from "next-auth/providers/credentials";
@@ -37,6 +38,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
           return null;
         }
+      },
+    }),
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      token: `${process.env.API_URL}/account/auth/github/token`, // 一時コードを送信する Backend API のパスを指定する
+      userinfo: {
+        async request({
+          tokens,
+        }: {
+          tokens: { access_token: string; refresh_token: string; token_type: "bearer" }; // Backend API から返却されたアクセストークン
+        }) {
+          // Backend API で返却されたアクセストークンをもとにユーザー情報を取得する
+          const me = await fetch(`${process.env.API_URL}/account/me`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${tokens.access_token}` },
+          }).then((res) => res.json());
+          return {
+            email: me.email,
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token,
+          };
+        },
+      },
+      profile(profile) {
+        return {
+          email: profile.email,
+          accessToken: String(profile.accessToken),
+          refreshToken: String(profile.refreshToken),
+        };
       },
     }),
   ],

@@ -3,13 +3,17 @@
 import { Button, Heading, Text, VStack, HStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { FiLogIn } from "react-icons/fi";
-import { FaUser, FaUserPlus } from "react-icons/fa";
-import { guestLogin } from "@/lib/actions";
+import { FaUser, FaUserPlus, FaGithub } from "react-icons/fa";
+import { guestLogin, githubLogin } from "@/lib/actions";
 
 export default function IntroductionPage() {
   const handleGuestLogin = async () => {
     // ゲストとしてログイン
     await guestLogin();
+  };
+  const handleGithubLogin = async () => {
+    // ゲストとしてログイン
+    await githubLogin();
   };
   return (
     <VStack minH="100vh" justify="center">
@@ -34,10 +38,16 @@ export default function IntroductionPage() {
           </NextLink>
         </Button>
       </HStack>
-      <Button variant="surface" fontWeight="700" size="lg" onClick={handleGuestLogin}>
-        <FaUser />
-        Guest Login
-      </Button>
+      <HStack spaceX="5">
+        <Button variant="surface" fontWeight="700" size="lg" onClick={handleGuestLogin}>
+          <FaUser />
+          Guest Login
+        </Button>
+        <Button variant="surface" fontWeight="700" size="lg" onClick={handleGithubLogin}>
+          <FaGithub />
+          Git hub Login
+        </Button>
+      </HStack>
     </VStack>
   );
 }
