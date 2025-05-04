@@ -6,6 +6,7 @@ import { FiHome } from "react-icons/fi";
 import { BiCategory } from "react-icons/bi";
 import { GrTask } from "react-icons/gr";
 import { FaRegLightbulb } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
 import { usePathname } from "next/navigation";
 
 // Map of links to display in the side navigation.
@@ -19,6 +20,7 @@ const links = [
     icon: BiCategory,
   },
   { name: "Suggest", href: "/dashboard/suggest", icon: FaRegLightbulb },
+  { name: "Settings", href: "/dashboard/settings", icon: IoMdSettings },
 ];
 
 export default function NavLinks() {

@@ -5,7 +5,7 @@ import NextLink from "next/link";
 import { IconButton, Card, Heading, Progress, HStack, Text, VStack, Link, Box } from "@chakra-ui/react";
 import { BsPersonWalking } from "react-icons/bs";
 import { LuAlarmClock } from "react-icons/lu";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdChat } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { Category, Todo } from "@/lib/definitions";
 
@@ -127,6 +127,11 @@ export default function TodoCard({ todo, category }: { todo: Todo; category?: Ca
           <NextLink href={`todos/${String(todo.id)}/edit`}>
             <IconButton aria-label="edit" colorPalette="gray" rounded="full" size="xs">
               <MdEdit />
+            </IconButton>
+          </NextLink>
+          <NextLink href={`todos/${String(todo.id)}/chat`}>
+            <IconButton aria-label="chat" colorPalette="gray" rounded="full" size="xs">
+              <MdChat />
             </IconButton>
           </NextLink>
           {category && (

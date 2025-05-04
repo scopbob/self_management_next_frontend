@@ -6,7 +6,7 @@ import Credentials from "next-auth/providers/credentials";
 import { SigninFormSchema } from "@/lib/definitions";
 import { getIsTokenValid } from "./lib/auth-helpers";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
@@ -29,6 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const data = await response.json();
           return {
             email: data.email,
+            picture: data.avatar,
             accessToken: data.access,
             refreshToken: data.refresh,
           };
@@ -57,6 +58,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }).then((res) => res.json());
           return {
             email: me.email,
+            picture: me.avatar,
             accessToken: tokens.access_token,
             refreshToken: tokens.refresh_token,
           };
@@ -65,6 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       profile(profile) {
         return {
           email: profile.email,
+          picture: String(profile.picture),
           accessToken: String(profile.accessToken),
           refreshToken: String(profile.refreshToken),
         };
@@ -72,15 +75,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       //auth.jsを用いてtokenのrefreshを試みたが、token.access_tokenが固定されてしまい、何度もrefreshされてしまう。sessionで代入はされているようで、session.accessTokenは変更されているため、一応動作はする。
       if (user) {
         // First-time login, save the `access_token`, its expiry and the `refresh_token`
         return {
           ...token,
+          picture: user.picture,
           access_token: user.accessToken,
           refresh_token: user.refreshToken,
         };
+      } else if (trigger === "update" && session?.user) {
+        token.picture = session?.user.image;
+        return token;
       } else if (getIsTokenValid(token.access_token as string)) {
         // Subsequent logins, but the `access_token` is still valid
         return token;

@@ -8,8 +8,7 @@ export const metadata: Metadata = {
   description: "This is Self Management App",
 };
 
-export default function RootLayout(props: { children: React.ReactNode }) {
-  const { children } = props;
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja" suppressHydrationWarning>
       <head />

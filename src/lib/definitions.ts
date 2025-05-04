@@ -10,6 +10,8 @@ export const SigninFormSchema = SignupFormSchema.omit({ password1: true, passwor
   password: SignupFormSchema.shape.password1,
 });
 
+export const PasswordFormSchema = SignupFormSchema.omit({ email: true });
+
 const PRIORITY_CHOICES = ["Hi", "Md", "Lo"] as const;
 
 const priorityEnum = z.enum(PRIORITY_CHOICES);

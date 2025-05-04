@@ -1,10 +1,14 @@
+import { auth } from "@/auth";
 import { FiLogOut } from "react-icons/fi";
 import NextLink from "next/link";
 import NavLinks from "@/components/ui/dashboard/nav-links";
 import { handleLogout } from "@/lib/actions";
-import { Box, Stack, VStack, Button, Heading, Text } from "@chakra-ui/react";
+import { Box, Stack, VStack, Button, Heading, Text, Avatar, HStack } from "@chakra-ui/react";
 
-export default function SideNav() {
+export default async function SideNav() {
+  const session = await auth();
+  const email = session?.user?.email;
+  const avatarSrc = session?.user?.image ? process.env.NEXT_PUBLIC_MEDIA_URL + session.user.image : undefined;
   return (
     <VStack h="full" bg={{ base: "gray.100", _dark: "gray.400" }} p={4}>
       {/* ヘッダー部分 */}
@@ -20,6 +24,15 @@ export default function SideNav() {
 
         {/* 余白のボックス */}
         <Box flexGrow="1" display={{ base: "none", md: "block" }} />
+
+        {/* ユーザー情報部分 */}
+        <HStack align="center" mb={{ base: "0", md: "2" }} justifyContent={{ base: "space-between", md: "flex-start" }}>
+          <Avatar.Root>
+            <Avatar.Fallback />
+            <Avatar.Image src={avatarSrc} />
+          </Avatar.Root>
+          <Text display={{ base: "none", md: "block" }}>{email}</Text>
+        </HStack>
 
         {/* ログアウトボタン */}
         <form

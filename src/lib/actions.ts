@@ -1,9 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { signIn, signOut, auth } from "@/auth";
+import { signIn, signOut, auth, unstable_update } from "@/auth";
 import { AuthError } from "next-auth";
-import { SignupFormSchema, FormState, ApiErrorDetail, TodoSubmit, Category } from "@/lib/definitions";
+import { SignupFormSchema, FormState, ApiErrorDetail, TodoSubmit, Category, PasswordFormSchema } from "@/lib/definitions";
 import { getIsTokenValid } from "./auth-helpers";
 import { revalidatePath } from "next/cache";
 
@@ -414,6 +414,38 @@ export async function deleteCategories(ids: number[]) {
   }
 }
 
+export async function createAvatar(formData: FormData) {
+  const session = await auth();
+  if (session?.isGuest === true) {
+    return;
+  }
+  const accessToken = session?.accessToken;
+
+  try {
+    const response = await fetch(process.env.API_URL + `/account/avatar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ image: formData.get("image") }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      const error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      return;
+    }
+
+    await unstable_update({ user: { image: data.url } });
+  } catch (error) {
+    console.error(error);
+  }
+  redirect("/dashboard/settings");
+}
+
 export async function createAccount(State: FormState, formData: FormData) {
   const validatedFields = SignupFormSchema.safeParse({
     email: formData.get("email"),
@@ -449,6 +481,51 @@ export async function createAccount(State: FormState, formData: FormData) {
     console.log(error);
   }
   redirect("/signup/complete");
+}
+
+export async function changePassword(State: FormState, formData: FormData) {
+  const session = await auth();
+  if (session?.isGuest === true) {
+    return;
+  }
+  const accessToken = session?.accessToken;
+
+  const validatedFields = PasswordFormSchema.safeParse({
+    password1: formData.get("password1"),
+    password2: formData.get("password2"),
+  });
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Change Password.",
+    };
+  }
+
+  const { password1, password2 } = validatedFields.data;
+  if (password1 !== password2) {
+    return { errors: { password2: ["Passwords do not match"] } };
+  }
+  try {
+    const response = await fetch(process.env.API_URL + "/account/update_password", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ password: password1 }),
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      const error_details: { [key: string]: string[] } = {};
+      data.detail.map(function (detail: ApiErrorDetail) {
+        error_details[detail.loc[2]] = detail.msg;
+      });
+      return { errors: error_details };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  redirect("/dashboard/settings");
 }
 
 export async function handleLogout() {
